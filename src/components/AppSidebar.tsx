@@ -84,7 +84,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="px-4 py-2 text-xs text-muted-foreground">
+        <div className="px-4 py-2 text-xs text-muted-foreground border-t">
           © 2025 Sistema Librería
         </div>
       </SidebarFooter>

@@ -6,31 +6,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { CategoriaForm, type CategoriaFormValues } from './CategoriaForm';
-import type { Categoria } from '../interfaces';
+import { ProductoForm, type ProductoFormValues } from './ProductoForm';
+import type { Producto } from '../interfaces';
+import type { Categoria } from '@/modules/Categories/interfaces';
 
-interface CategoriaDialogProps {
+interface ProductoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  categoria?: Categoria;
-  onSubmit: (data: CategoriaFormValues) => Promise<void>;
+  producto?: Producto;
+  categorias: Categoria[];
+  onSubmit: (data: ProductoFormValues) => Promise<void>;
 }
 
-export function CategoriaDialog({
+export function ProductoDialog({
   open,
   onOpenChange,
-  categoria,
+  producto,
+  categorias,
   onSubmit,
-}: CategoriaDialogProps) {
+}: ProductoDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: CategoriaFormValues) => {
+  const handleSubmit = async (data: ProductoFormValues) => {
     setIsLoading(true);
     try {
       await onSubmit(data);
       onOpenChange(false);
     } catch (error) {
-      console.error('Error al guardar categoría:', error);
+      console.error('Error al guardar producto:', error);
     } finally {
       setIsLoading(false);
     }
@@ -41,16 +44,17 @@ export function CategoriaDialog({
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>
-            {categoria ? 'Editar Categoría' : 'Nueva Categoría'}
+            {producto ? 'Editar Producto' : 'Nuevo Producto'}
           </DialogTitle>
           <DialogDescription>
-            {categoria
-              ? 'Modifica los datos de la categoría'
-              : 'Completa los datos para crear una nueva categoría'}
+            {producto
+              ? 'Modifica los datos del producto'
+              : 'Completa los datos para crear un nuevo producto'}
           </DialogDescription>
         </DialogHeader>
-        <CategoriaForm
-          categoria={categoria}
+        <ProductoForm
+          producto={producto}
+          categorias={categorias}
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />

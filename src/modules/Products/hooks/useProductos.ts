@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productosService, type CreateProductoDto, type UpdateProductoDto } from '@/modules/Products/services/productos.service';
+import { productosService } from '@/modules/Products/services/productos.service';
+import type { CreateProductoDto, UpdateProductoDto } from '../interfaces';
 
 // Query Keys
 export const productosKeys = {
@@ -7,7 +8,7 @@ export const productosKeys = {
   lists: () => [...productosKeys.all, 'list'] as const,
   list: (filters?: Record<string, unknown>) => [...productosKeys.lists(), filters] as const,
   details: () => [...productosKeys.all, 'detail'] as const,
-  detail: (id: number) => [...productosKeys.details(), id] as const,
+  detail: (id: string) => [...productosKeys.details(), id] as const,
 };
 
 // Hooks para queries (GET)
@@ -18,7 +19,7 @@ export function useProductos() {
   });
 }
 
-export function useProducto(id: number) {
+export function useProducto(id: string) {
   return useQuery({
     queryKey: productosKeys.detail(id),
     queryFn: () => productosService.getById(id),
@@ -43,7 +44,7 @@ export function useUpdateProducto() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateProductoDto }) => 
+    mutationFn: ({ id, data }: { id: string; data: UpdateProductoDto }) => 
       productosService.update(id, data),
     onSuccess: (_, variables) => {
       // Invalida la lista y el detalle del producto actualizado
@@ -57,7 +58,7 @@ export function useDeleteProducto() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => productosService.delete(id),
+    mutationFn: (id: string) => productosService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productosKeys.lists() });
     },

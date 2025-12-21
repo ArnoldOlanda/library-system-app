@@ -20,60 +20,98 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import type { Producto } from '../interfaces';
 import { Pencil, Trash2 } from 'lucide-react';
-import type { Categoria } from '../interfaces';
+import { Badge } from '@/components/ui/badge';
 
-interface CategoriasTableProps {
-  data: Categoria[];
-  onEdit: (categoria: Categoria) => void;
+interface ProductosTableProps {
+  data: Producto[];
+  onEdit: (producto: Producto) => void;
   onDelete: (id: string) => void;
 }
 
-export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps) {
+export function ProductosTable({ data, onEdit, onDelete }: ProductosTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const columns: ColumnDef<Categoria>[] = [
+  const columns: ColumnDef<Producto>[] = [
+    {
+      accessorKey: 'codigo',
+      header: 'Código',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('codigo')}</div>,
+    },
     {
       accessorKey: 'nombre',
       header: 'Nombre',
-      cell: ({ row }) => <div className="font-medium">{row.getValue('nombre')}</div>,
+      cell: ({ row }) => <div>{row.getValue('nombre')}</div>,
     },
     {
-      accessorKey: 'descripcion',
-      header: 'Descripción',
+      accessorKey: 'categoria.nombre',
+      header: 'Categoría',
       cell: ({ row }) => (
-        <div className="text-muted-foreground">
-          {row.getValue('descripcion') || 'Sin descripción'}
-        </div>
+        <Badge variant="outline">{row.original.categoria.nombre}</Badge>
       ),
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Fecha de Creación',
+      accessorKey: 'precioCompra',
+      header: 'P. Compra',
       cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return <div>{date.toLocaleDateString('es-ES')}</div>;
+        const precio = parseFloat(row.getValue('precioCompra'));
+        return <div>S/. {precio.toFixed(2)}</div>;
+      },
+    },
+    {
+      accessorKey: 'precioVenta',
+      header: 'P. Venta',
+      cell: ({ row }) => {
+        const precio = parseFloat(row.getValue('precioVenta'));
+        return <div className="font-medium">S/. {precio.toFixed(2)}</div>;
+      },
+    },
+    {
+      accessorKey: 'stock',
+      header: 'Stock',
+      cell: ({ row }) => {
+        const stock = row.getValue('stock') as number;
+        const stockMinimo = row.original.stockMinimo;
+        const isLow = stock <= stockMinimo;
+        return (
+          <Badge variant={isLow ? 'destructive' : 'secondary'}>
+            {stock}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'estado',
+      header: 'Estado',
+      cell: ({ row }) => {
+        const estado = row.getValue('estado') as boolean;
+        return (
+          <Badge variant={estado ? 'default' : 'secondary'}>
+            {estado ? 'Activo' : 'Inactivo'}
+          </Badge>
+        );
       },
     },
     {
       id: 'actions',
       header: 'Acciones',
       cell: ({ row }) => {
-        const categoria = row.original;
+        const producto = row.original;
         return (
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="icon-sm"
-              onClick={() => onEdit(categoria)}
+              onClick={() => onEdit(producto)}
             >
               <Pencil className="h-4 w-4" />
             </Button>
             <Button
               variant="destructive"
               size="icon-sm"
-              onClick={() => onDelete(categoria.id)}
+              onClick={() => onDelete(producto.id)}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -102,7 +140,7 @@ export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Input
-          placeholder="Buscar por nombre..."
+          placeholder="Buscar por nombre o código..."
           value={(table.getColumn('nombre')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('nombre')?.setFilterValue(event.target.value)

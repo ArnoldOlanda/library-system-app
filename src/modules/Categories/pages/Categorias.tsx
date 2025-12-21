@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { useCategorias, useCreateCategoria, useUpdateCategoria, useDeleteCategoria } from '../hooks/useCategorias';
 import { CategoriasTable } from '../components/CategoriasTable';
 import { CategoriaDialog } from '../components/CategoriaDialog';
-import { type Categoria } from '../services/categorias.service';
 import { type CategoriaFormValues } from '../components/CategoriaForm';
 import { toast } from 'sonner';
+import type { Categoria } from '../interfaces';
 
 export function Categorias() {
   const [dialogOpen, setDialogOpen] = useState(false);

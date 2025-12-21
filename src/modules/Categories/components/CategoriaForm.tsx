@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { type Categoria } from '../services/categorias.service';
+import type { Categoria } from '../interfaces';
 
 const categoriaSchema = z.object({
   nombre: z

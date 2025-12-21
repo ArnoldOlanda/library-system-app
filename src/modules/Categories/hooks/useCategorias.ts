@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { categoriasService, type CreateCategoriaDto, type UpdateCategoriaDto } from '@/modules/Categories/services/categorias.service';
+import { categoriasService } from '@/modules/Categories/services/categorias.service';
+import type { CreateCategoriaDto, UpdateCategoriaDto } from '../interfaces';
 
 // Query Keys
 export const categoriasKeys = {

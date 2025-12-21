@@ -1,51 +1,30 @@
+import type { ApiResponse } from '@/interfaces';
 import { API } from '../../../api/index';
+import type { ProductResponse, Producto, CreateProductoDto, UpdateProductoDto } from '../interfaces';
 
-// Tipos
-export interface Producto {
-  id: number;
-  nombre: string;
-  descripcion?: string;
-  precio: number;
-  stock: number;
-  categoriaId: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateProductoDto {
-  nombre: string;
-  descripcion?: string;
-  precio: number;
-  stock: number;
-  categoriaId: number;
-}
-
-export interface UpdateProductoDto extends Partial<CreateProductoDto> {}
-
-// Servicios
 export const productosService = {
   getAll: async () => {
-    const { data } = await API.get<Producto[]>('/productos');
-    return data;
+    const { data } = await API.get<ApiResponse<ProductResponse>>('/productos');
+    return data.data.productos;
   },
 
-  getById: async (id: number) => {
-    const { data } = await API.get<Producto>(`/productos/${id}`);
+  getById: async (id: string) => {
+    const { data } = await API.get<ApiResponse<Producto>>(`/productos/${id}`);
     return data;
   },
 
   create: async (producto: CreateProductoDto) => {
-    const { data } = await API.post<Producto>('/productos', producto);
+    const { data } = await API.post<ApiResponse<Producto>>('/productos', producto);
     return data;
   },
 
-  update: async (id: number, producto: UpdateProductoDto) => {
-    const { data } = await API.patch<Producto>(`/productos/${id}`, producto);
+  update: async (id: string, producto: UpdateProductoDto) => {
+    const { data } = await API.patch<ApiResponse<Producto>>(`/productos/${id}`, producto);
     return data;
   },
 
-  delete: async (id: number) => {
-    const { data } = await API.delete(`/productos/${id}`);
+  delete: async (id: string) => {
+    const { data } = await API.delete<any>(`/productos/${id}`);
     return data;
   },
 };
