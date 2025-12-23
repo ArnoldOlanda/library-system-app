@@ -10,7 +10,7 @@ import type { ApiResponse } from '@/interfaces';
 export const proveedoresService = {
   getAll: async (page: number = 1, limit: number = 10) => {
     const response = await API.get<ApiResponse<ProveedorResponse>>(
-      `/proveedores?page=${page}&limit=${limit}`
+      `/proveedores?offset=${page}&limit=${limit}`
     );
     return response.data.data;
   },

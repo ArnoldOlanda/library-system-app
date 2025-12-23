@@ -12,10 +12,10 @@ export const categoriasKeys = {
 };
 
 // Hooks para queries (GET)
-export function useCategorias() {
+export function useCategorias(page: number = 1, limit: number = 10) {
   return useQuery({
     queryKey: categoriasKeys.lists(),
-    queryFn: categoriasService.getAll,
+    queryFn: () => categoriasService.getAll(page, limit),
   });
 }
 

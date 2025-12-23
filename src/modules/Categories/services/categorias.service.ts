@@ -3,10 +3,9 @@ import { API } from '../../../api/index';
 import type { CategoryResponse, Categoria, CreateCategoriaDto, UpdateCategoriaDto } from '../interfaces';
 
 export const categoriasService = {
-  getAll: async () => {
-    const { data } = await API.get<ApiResponse<CategoryResponse>>('/categorias');
-    console.log(data);
-    
+  getAll: async (page: number = 1, limit: number = 10) => {
+    const { data } = await API.get<ApiResponse<CategoryResponse>>(`/categorias?offset=${page}&limit=${limit}`);
+
     return data.data.categorias;
   },
 
