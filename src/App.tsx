@@ -10,7 +10,7 @@ import { Settings } from './modules/Settings/pages/Settings';
 import { Productos } from './modules/Products/pages/Productos';
 import { Categorias } from './modules/Categories/pages/Categorias';
 import { Clientes } from './modules/Customers/pages/Clientes';
-import { Proveedores } from './modules/Suppliers/pages/Proveedores';
+import Proveedores from './modules/Suppliers/pages/Proveedores';
 import { Compras } from './modules/Purchases/pages/Compras';
 import { Ventas } from './modules/Sales/pages/Ventas';
 import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
