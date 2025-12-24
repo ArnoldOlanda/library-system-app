@@ -11,6 +11,7 @@ import { Productos } from './modules/Products/pages/Productos';
 import { Categorias } from './modules/Categories/pages/Categorias';
 import { Clientes } from './modules/Customers/pages/Clientes';
 import Proveedores from './modules/Suppliers/pages/Proveedores';
+import MovimientosAlmacen from './modules/InventoryMovements/pages/MovimientosAlmacen';
 import { Compras } from './modules/Purchases/pages/Compras';
 import { Ventas } from './modules/Sales/pages/Ventas';
 import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
@@ -37,11 +38,12 @@ function App() {
             <Route path="usuarios" element={<Users />} />
             <Route path="productos" element={<Productos />} />
             <Route path="categorias" element={<Categorias />} />
+            <Route path="movimientos-almacen" element={<MovimientosAlmacen />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="proveedores" element={<Proveedores />} />
             <Route path="compras" element={<Compras />} />
             <Route path="ventas" element={<Ventas />} />
-            <Route path="arqueos-caja" element={<ArqueosCaja />} />
+            <Route path="caja" element={<ArqueosCaja />} />
             <Route path="configuracion" element={<Settings />} />
           </Route>
 

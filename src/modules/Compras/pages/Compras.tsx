@@ -8,8 +8,8 @@ import {
   useCompras,
   useCreateCompra,
   useDeleteCompra,
-} from '../hooks/useCompras';
-import type { CreateCompraDto, Compra } from '../interfaces';
+} from '../../Purchases/hooks/useCompras';
+import type { CreateCompraDto, Compra } from '../../Purchases/interfaces';
 import { toast } from 'sonner';
 import { format } from '@formkit/tempo';
 import {

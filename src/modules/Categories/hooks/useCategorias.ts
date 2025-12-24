@@ -2,26 +2,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoriasService } from '@/modules/Categories/services/categorias.service';
 import type { CreateCategoriaDto, UpdateCategoriaDto } from '../interfaces';
 
-// Query Keys
-export const categoriasKeys = {
-  all: ['categorias'] as const,
-  lists: () => [...categoriasKeys.all, 'list'] as const,
-  list: (filters?: Record<string, unknown>) => [...categoriasKeys.lists(), filters] as const,
-  details: () => [...categoriasKeys.all, 'detail'] as const,
-  detail: (id: string) => [...categoriasKeys.details(), id] as const,
-};
+const QUERY_KEY = 'categorias';
 
 // Hooks para queries (GET)
 export function useCategorias(page: number = 1, limit: number = 10) {
   return useQuery({
-    queryKey: categoriasKeys.lists(),
+    queryKey: [QUERY_KEY, page, limit],
     queryFn: () => categoriasService.getAll(page, limit),
   });
 }
 
 export function useCategoria(id: string) {
   return useQuery({
-    queryKey: categoriasKeys.detail(id),
+    queryKey: [QUERY_KEY, id],
     queryFn: () => categoriasService.getById(id),
     enabled: !!id, // Solo ejecutar si hay id
   });
@@ -35,7 +28,7 @@ export function useCreateCategoria() {
     mutationFn: (categoria: CreateCategoriaDto) => categoriasService.create(categoria),
     onSuccess: () => {
       // Invalida y refetch la lista de categorías
-      queryClient.invalidateQueries({ queryKey: categoriasKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }
@@ -46,10 +39,8 @@ export function useUpdateCategoria() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateCategoriaDto }) => 
       categoriasService.update(id, data),
-    onSuccess: (_, variables) => {
-      // Invalida la lista y el detalle de la categoría actualizada
-      queryClient.invalidateQueries({ queryKey: categoriasKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: categoriasKeys.detail(variables.id) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }
@@ -60,7 +51,7 @@ export function useDeleteCategoria() {
   return useMutation({
     mutationFn: (id: string) => categoriasService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: categoriasKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
 }
