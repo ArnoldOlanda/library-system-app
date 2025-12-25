@@ -84,18 +84,18 @@ export function ProveedoresTable({ data, onEdit, onDelete }: ProveedoresTablePro
         return (
           <div className="flex items-center gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               onClick={() => onEdit(proveedor)}
             >
               <Pencil className="h-4 w-4" />
             </Button>
             <Button
-              variant="ghost"
+              variant="destructive"
               size="icon"
               onClick={() => onDelete(proveedor)}
             >
-              <Trash2 className="h-4 w-4 text-red-500" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         );

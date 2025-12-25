@@ -23,7 +23,7 @@ export function CompraDialog({
 }: CompraDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl lg:w-[60%] md:w-[80%] sm:w-[90%] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nueva Compra</DialogTitle>
           <DialogDescription>

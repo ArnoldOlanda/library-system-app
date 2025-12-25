@@ -31,7 +31,7 @@ export function CompraDetalleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl w-[80%] md:w-[60%] lg:w-[40%]">
         <DialogHeader>
           <DialogTitle>Detalle de Compra</DialogTitle>
         </DialogHeader>

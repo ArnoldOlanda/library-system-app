@@ -89,18 +89,18 @@ export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
         return (
           <div className="flex items-center gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               onClick={() => onView(compra)}
             >
               <Eye className="h-4 w-4" />
             </Button>
             <Button
-              variant="ghost"
+              variant="destructive"
               size="icon"
               onClick={() => onDelete(compra)}
             >
-              <Trash2 className="h-4 w-4 text-red-500" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         );

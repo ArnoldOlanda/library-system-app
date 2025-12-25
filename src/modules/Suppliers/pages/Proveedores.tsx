@@ -143,7 +143,7 @@ export default function Proveedores() {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el
+              Esta acción no se puede deshacer. Se eliminará el
               proveedor <strong>{proveedorToDelete?.nombre}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -151,7 +151,7 @@ export default function Proveedores() {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>

@@ -94,7 +94,7 @@ export function ArqueosCaja() {
                     Abrir Caja del Día
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-lg w-[90%] md:w-[50%] lg:w-[30%]">
                   <DialogHeader>
                     <DialogTitle>Abrir Caja</DialogTitle>
                     <DialogDescription>
