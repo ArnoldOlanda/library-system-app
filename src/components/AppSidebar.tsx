@@ -6,11 +6,12 @@ import {
   Package, 
   Tags, 
   UsersRound, 
-  Store, 
   ShoppingCart, 
   ShoppingBag,
   Wallet,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Truck,
+  Monitor
 } from 'lucide-react';
 import {
   Sidebar,
@@ -31,11 +32,12 @@ const menuItems = [
   { icon: Package, label: 'Productos', path: '/productos', group: 'Inventario' },
   { icon: Tags, label: 'Categorías', path: '/categorias', group: 'Inventario' },
   { icon: ArrowLeftRight, label: 'Movimientos', path: '/movimientos-almacen', group: 'Inventario' },
+  { icon: Monitor, label: 'POS', path: '/pos', group: 'Transacciones' },
   { icon: ShoppingBag, label: 'Ventas', path: '/ventas', group: 'Transacciones' },
   { icon: ShoppingCart, label: 'Compras', path: '/compras', group: 'Transacciones' },
   { icon: Wallet, label: 'Caja', path: '/caja', group: 'Transacciones' },
   { icon: UsersRound, label: 'Clientes', path: '/clientes', group: 'Gestión' },
-  { icon: Store, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
+  { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
   { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Sistema' },
   { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Sistema' },
 ];

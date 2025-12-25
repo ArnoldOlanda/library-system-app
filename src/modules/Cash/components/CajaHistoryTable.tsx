@@ -55,16 +55,16 @@ export function CajaHistoryTable({ arqueos, loading }: CajaHistoryTableProps) {
                                     {new Date(arqueo.fechaArqueo).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    ${Number(arqueo.montoInicial).toFixed(2)}
+                                    S/ {Number(arqueo.montoInicial).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    ${Number(arqueo.totalRecaudado).toFixed(2)}
+                                    S/ {Number(arqueo.totalRecaudado).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    ${Number(arqueo.totalEfectivo).toFixed(2)}
+                                    S/ {Number(arqueo.totalEfectivo).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    ${Number(arqueo.totalTarjeta).toFixed(2)}
+                                    S/ {Number(arqueo.totalTarjeta).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <span
@@ -73,7 +73,7 @@ export function CajaHistoryTable({ arqueos, loading }: CajaHistoryTableProps) {
                                                 : 'text-red-600'
                                             }`}
                                     >
-                                        ${Number(arqueo.diferencia).toFixed(2)}
+                                        S/ {Number(arqueo.diferencia).toFixed(2)}
                                     </span>
                                 </td>
                             </tr>

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { Producto } from '@/modules/Products/interfaces';
 import type { CartItem, Cart, FormaPago, CreateVentaDto } from '../interfaces';
-import { ventasService } from '../services/ventas.service';
+import { ventasService } from '../../Sales/services/ventas.service';
 
 export const usePOS = () => {
   const [cart, setCart] = useState<Cart>({

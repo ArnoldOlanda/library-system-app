@@ -23,13 +23,7 @@ export interface CreateCajaDto {
   totalEfectivo: number;
   totalTarjeta: number;
   diferencia: number;
+  open: boolean;
 }
 
-export interface UpdateCajaDto {
-  fechaArqueo?: string;
-  montoInicial?: number;
-  totalRecaudado?: number;
-  totalEfectivo?: number;
-  totalTarjeta?: number;
-  diferencia?: number;
-}
+export type UpdateCajaDto = Partial<CreateCajaDto>;

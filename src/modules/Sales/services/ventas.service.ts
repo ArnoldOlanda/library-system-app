@@ -5,13 +5,15 @@ import type {
   VentaResponse,
   CreateVentaDto,
   UpdateVentaDto,
-} from '../interfaces';
+} from '../../Pos/interfaces';
 
 export const ventasService = {
-  getAll: async (page: number = 1, limit: number = 10) => {
-    const response = await API.get<ApiResponse<VentaResponse>>(
-      `/ventas?offset=${page}&limit=${limit}`
-    );
+  getAll: async (page: number = 1, limit: number = 10, startDate?: string, endDate?: string) => {
+    let url = `/ventas?offset=${(page - 1) * limit}&limit=${limit}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    
+    const response = await API.get<ApiResponse<VentaResponse>>(url);
     return response.data.data;
   },
 
