@@ -69,10 +69,11 @@ interface ProductoFormProps {
   producto?: Producto;
   categorias: Categoria[];
   onSubmit: (data: ProductoFormValues) => void;
+  onCancel: () => void;
   isLoading?: boolean;
 }
 
-export function ProductoForm({ producto, categorias, onSubmit, isLoading }: ProductoFormProps) {
+export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoading }: ProductoFormProps) {
   const form = useForm<ProductoFormValues>({
     resolver: zodResolver(productoSchema),
     defaultValues: {
@@ -225,6 +226,9 @@ export function ProductoForm({ producto, categorias, onSubmit, isLoading }: Prod
         />
 
         <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+            Cancelar
+          </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Guardando...' : producto ? 'Actualizar' : 'Crear'}
           </Button>

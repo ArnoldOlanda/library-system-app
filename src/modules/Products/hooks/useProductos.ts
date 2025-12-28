@@ -6,10 +6,10 @@ import type { CreateProductoDto, UpdateProductoDto } from '../interfaces';
 const QUERY_KEY = 'productos';
 
 // Hooks para queries (GET)
-export function useProductos(page: number = 1, limit: number = 10) {
+export function useProductos(page?: number, limit?: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page, limit],
-    queryFn: ()=>productosService.getAll(page, limit),
+    queryKey: [QUERY_KEY, page, limit, search],
+    queryFn: ()=>productosService.getAll(page, limit, search),
   });
 }
 

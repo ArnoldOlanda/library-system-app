@@ -3,13 +3,15 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   type ColumnFiltersState,
   getFilteredRowModel,
+  type PaginationState,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
+import type { Categoria, CategoryResponse } from '../interfaces';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -20,18 +22,35 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Pencil, Trash2 } from 'lucide-react';
-import type { Categoria } from '../interfaces';
+import { Pagination } from '@/components/Pagination';
+import type { TableProps } from '@/interfaces';
 
-interface CategoriasTableProps {
-  data: Categoria[];
-  onEdit: (categoria: Categoria) => void;
-  onDelete: (id: string) => void;
-}
-
-export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps) {
+export function CategoriasTable({ 
+  isLoading,
+  data,
+  onEdit,
+  onDelete,
+  search,
+  onSearchChange,
+  onPageChange,
+  onPageSizeChange 
+}: TableProps<CategoryResponse, Categoria>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: data ? data.offset - 1 : 0,
+    pageSize: data?.limit || 10,
+  });
+
+  // Sincronizar estado de paginación cuando cambien los datos del servidor
+  useEffect(() => {
+    if (data) {
+      setPagination({
+        pageIndex: data.offset - 1,
+        pageSize: data.limit,
+      });
+    }
+  }, [data]);
 
   const columns: ColumnDef<Categoria>[] = [
     {
@@ -73,7 +92,7 @@ export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps
             <Button
               variant="destructive"
               size="icon-sm"
-              onClick={() => onDelete(categoria.id)}
+              onClick={() => onDelete(categoria)}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -84,17 +103,30 @@ export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps
   ];
 
   const table = useReactTable({
-    data,
+    data: data?.categorias || [],
     columns,
+    pageCount: data?.pages || 0,
+    rowCount: data?.total || 0,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    manualPagination: true,
+    onPaginationChange: (updater) => {
+      const newPagination = typeof updater === 'function' ? updater(pagination) : updater;
+
+      if (newPagination.pageSize !== pagination.pageSize) {
+        onPageSizeChange(newPagination.pageSize);
+      }
+      if (newPagination.pageIndex !== pagination.pageIndex) {
+        onPageChange(newPagination.pageIndex + 1);
+      }
+    },
     state: {
       sorting,
       columnFilters,
+      pagination,
     },
   });
 
@@ -103,75 +135,68 @@ export function CategoriasTable({ data, onEdit, onDelete }: CategoriasTableProps
       <div className="flex items-center gap-2">
         <Input
           placeholder="Buscar por nombre..."
-          value={(table.getColumn('nombre')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('nombre')?.setFilterValue(event.target.value)
-          }
+          value={search}
+          onChange={(event) => {
+            const value = event.target.value;
+            onSearchChange(value || undefined);
+          }}
           className="max-w-sm"
         />
       </div>
 
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
+        {
+          isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-muted-foreground">Cargando categorías...</div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No se encontraron resultados.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )
+        }
+
       </div>
 
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
-      </div>
+      <Pagination table={table} pagination={pagination} />
     </div>
   );
 }

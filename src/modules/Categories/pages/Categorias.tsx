@@ -7,13 +7,22 @@ import { CategoriaDialog } from '../components/CategoriaDialog';
 import { type CategoriaFormValues } from '../components/CategoriaForm';
 import { toast } from 'sonner';
 import type { Categoria } from '../interfaces';
+import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function Categorias() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategoria, setSelectedCategoria] = useState<Categoria | undefined>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+
+  // Debounce search para evitar peticiones excesivas
+  const debouncedSearch = useDebounce(search, 500);
 
   // Queries y mutaciones
-  const { data: categorias = [], isLoading } = useCategorias();
+  const { data: categorias, isLoading } = useCategorias(page, pageSize, debouncedSearch);
   const createMutation = useCreateCategoria();
   const updateMutation = useUpdateCategoria();
   const deleteMutation = useDeleteCategoria();
@@ -28,18 +37,28 @@ export function Categorias() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta categoría?')) return;
-
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        toast.success('Categoría eliminada exitosamente');
-      },
-      onError: (error: Error) => {
-        toast.error(`Error al eliminar: ${error.message}`);
-      },
-    });
+  const handleDelete = async (categoria: Categoria) => {
+    setSelectedCategoria(categoria);
+    setDeleteDialogOpen(true);
   };
+
+  const confirmDelete = async () => {
+    if(!selectedCategoria) return;
+
+    try {
+      await deleteMutation.mutateAsync(selectedCategoria.id);
+      toast.success('Categoría eliminada correctamente',{
+        position: 'top-center'
+      });
+      setDeleteDialogOpen(false);
+      setSelectedCategoria(undefined);
+    } catch (error) {
+      toast.error(
+        (error as any).response?.data?.message || 'Error al eliminar la categoría',
+        { position: 'top-center' }
+      );
+    }
+  }
 
   const handleSubmit = async (data: CategoriaFormValues) => {
     if (selectedCategoria) {
@@ -70,14 +89,6 @@ export function Categorias() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Cargando categorías...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -95,8 +106,16 @@ export function Categorias() {
 
       <CategoriasTable
         data={categorias}
+        isLoading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
       />
 
       <CategoriaDialog
@@ -104,6 +123,21 @@ export function Categorias() {
         onOpenChange={setDialogOpen}
         categoria={selectedCategoria}
         onSubmit={handleSubmit}
+      />
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        setOpen={(open: boolean) => setDeleteDialogOpen(open)}
+        title="¿Estás seguro?"
+        description={
+          <>
+            Esta acción no se puede deshacer. Se eliminará la
+            categoría <strong>{selectedCategoria?.nombre}</strong>.
+          </>
+        }
+        onConfirm={confirmDelete}
+        cancelText="Cancelar"
+        confirmText={deleteMutation.isPending ? 'Eliminando...' : 'Si, eliminar'}
       />
     </div>
   );

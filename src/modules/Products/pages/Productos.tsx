@@ -1,21 +1,29 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import type { Producto } from '../interfaces';
 import { useProductos, useCreateProducto, useUpdateProducto, useDeleteProducto } from '../hooks/useProductos';
-import { useCategorias } from '@/modules/Categories/hooks/useCategorias';
+import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 import { ProductosTable } from '../components/ProductosTable';
 import { ProductoDialog } from '../components/ProductoDialog';
 import { type ProductoFormValues } from '../components/ProductoForm';
-import { toast } from 'sonner';
-import type { Producto } from '../interfaces';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function Productos() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | undefined>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productoToDelete, setProductoToDelete] = useState<Producto | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+
+  // Debounce search para evitar peticiones excesivas
+    const debouncedSearch = useDebounce(search, 500);
 
   // Queries y mutaciones
-  const { data: productos = [], isLoading } = useProductos();
-  const { data: categorias = [], isLoading: isLoadingCategorias } = useCategorias();
+  const { data: productos, isLoading } = useProductos(page, pageSize, debouncedSearch);
   const createMutation = useCreateProducto();
   const updateMutation = useUpdateProducto();
   const deleteMutation = useDeleteProducto();
@@ -30,18 +38,25 @@ export function Productos() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
-
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        toast.success('Producto eliminado exitosamente');
-      },
-      onError: (error: Error) => {
-        toast.error(`Error al eliminar: ${error.message}`);
-      },
-    });
+  const handleDelete = async (producto: Producto) => {
+    setProductoToDelete(producto);
+    setDeleteDialogOpen(true);
   };
+
+  const confirmDelete = async () => {
+    if (!productoToDelete) return;
+
+    try {
+      await deleteMutation.mutateAsync(productoToDelete.id);
+      toast.success('Producto eliminado correctamente');
+      setDeleteDialogOpen(false);
+      setProductoToDelete(null);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || 'Error al eliminar el producto'
+      );
+    }
+  }
 
   const handleSubmit = async (data: ProductoFormValues) => {
     // Convertir strings a números
@@ -84,7 +99,7 @@ export function Productos() {
     }
   };
 
-  if (isLoading || isLoadingCategorias) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-muted-foreground">Cargando productos...</div>
@@ -108,17 +123,39 @@ export function Productos() {
       </div>
 
       <ProductosTable
+        isLoading={isLoading}
         data={productos}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
       />
 
       <ProductoDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         producto={selectedProducto}
-        categorias={categorias}
         onSubmit={handleSubmit}
+      />
+
+      <ConfirmDialog 
+        open={deleteDialogOpen}
+        setOpen={(open: boolean) => setDeleteDialogOpen(open)}
+        title="¿Estás seguro?"
+        description={
+          <>
+            Esta acción no se puede deshacer. Se eliminará el
+            producto <strong>{productoToDelete?.nombre}</strong>.
+          </>
+        }
+        onConfirm={confirmDelete}
+        cancelText="Cancelar"
+        confirmText={deleteMutation.isPending ? 'Eliminando...' : 'Si, eliminar'}
       />
     </div>
   );

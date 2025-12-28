@@ -8,11 +8,17 @@ import type {
 } from '../interfaces';
 
 export const productosService = {
-  getAll: async (page: number = 1, limit: number = 10) => {
+  getAll: async (page?: number, limit?: number, search?: string) => {
+
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('offset', page.toString());
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (search) params.append('search', search);
+
     const { data } = await API.get<ApiResponse<ProductResponse>>(
-      `/productos?offset=${page}&limit=${limit}`
+      `/productos?${params.toString()}`
     );
-    return data.data.productos;
+    return data.data;
   },
 
   getById: async (id: string) => {

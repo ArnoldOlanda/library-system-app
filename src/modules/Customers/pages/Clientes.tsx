@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { ClientesTable } from '../components/ClientesTable';
 import { ClienteDialog } from '../components/ClienteDialog';
 import {
@@ -10,17 +11,7 @@ import {
   useDeleteCliente,
 } from '../hooks/useClientes';
 import type { CreateClienteDto, Cliente } from '../interfaces';
-import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 
 export function Clientes() {
   const [page] = useState(1);
@@ -138,26 +129,20 @@ export function Clientes() {
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el
-              cliente <strong>{clienteToDelete?.nombre}</strong>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        setOpen={(open: boolean) => setDeleteDialogOpen(open)}
+        title="¿Estás seguro?"
+        description={
+          <>
+            Esta acción no se puede deshacer. Se eliminará el
+            cliente <strong>{clienteToDelete?.nombre}</strong>.
+          </>
+        }
+        onConfirm={confirmDelete}
+        cancelText="Cancelar"
+        confirmText={deleteMutation.isPending ? 'Eliminando...' : 'Si, eliminar'}
+      />
     </div>
   );
 }

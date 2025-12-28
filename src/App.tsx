@@ -17,44 +17,47 @@ import { Ventas } from './modules/Sales/pages/Ventas';
 import { PosPage } from './modules/Pos/pages/Pos';
 import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
 import { Layout } from './layout';
+import { ThemeProvider } from './components/ThemeProvider';
 
 function App() {
   return (
-    <QueryProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Ruta pública de login */}
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Rutas protegidas */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Home />} />
-            <Route path="usuarios" element={<Users />} />
-            <Route path="productos" element={<Productos />} />
-            <Route path="categorias" element={<Categorias />} />
-            <Route path="movimientos-almacen" element={<MovimientosAlmacen />} />
-            <Route path="clientes" element={<Clientes />} />
-            <Route path="proveedores" element={<Proveedores />} />
-            <Route path="compras" element={<Compras />} />
-            <Route path="ventas" element={<Ventas />} />
-            <Route path="pos" element={<PosPage />} />
-            <Route path="caja" element={<ArqueosCaja />} />
-            <Route path="configuracion" element={<Settings />} />
-          </Route>
+    <ThemeProvider>
+      <QueryProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Ruta pública de login */}
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Ruta catch-all para redireccionar a login o home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <Toaster />
-      </BrowserRouter>
-    </QueryProvider>
+            {/* Rutas protegidas */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Home />} />
+              <Route path="usuarios" element={<Users />} />
+              <Route path="productos" element={<Productos />} />
+              <Route path="categorias" element={<Categorias />} />
+              <Route path="movimientos-almacen" element={<MovimientosAlmacen />} />
+              <Route path="clientes" element={<Clientes />} />
+              <Route path="proveedores" element={<Proveedores />} />
+              <Route path="compras" element={<Compras />} />
+              <Route path="ventas" element={<Ventas />} />
+              <Route path="pos" element={<PosPage />} />
+              <Route path="caja" element={<ArqueosCaja />} />
+              <Route path="configuracion" element={<Settings />} />
+            </Route>
+
+            {/* Ruta catch-all para redireccionar a login o home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <Toaster />
+        </BrowserRouter>
+      </QueryProvider>
+    </ThemeProvider>
   );
 }
 

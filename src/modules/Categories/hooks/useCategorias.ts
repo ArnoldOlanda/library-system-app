@@ -5,10 +5,10 @@ import type { CreateCategoriaDto, UpdateCategoriaDto } from '../interfaces';
 const QUERY_KEY = 'categorias';
 
 // Hooks para queries (GET)
-export function useCategorias(page: number = 1, limit: number = 10) {
+export function useCategorias(page?: number, limit?: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page, limit],
-    queryFn: () => categoriasService.getAll(page, limit),
+    queryKey: [QUERY_KEY, page, limit, search],
+    queryFn: () => categoriasService.getAll(page, limit, search),
   });
 }
 

@@ -3,10 +3,22 @@ import { API } from '../../../api/index';
 import type { CategoryResponse, Categoria, CreateCategoriaDto, UpdateCategoriaDto } from '../interfaces';
 
 export const categoriasService = {
-  getAll: async (page: number = 1, limit: number = 10) => {
-    const { data } = await API.get<ApiResponse<CategoryResponse>>(`/categorias?offset=${page}&limit=${limit}`);
+  getAll: async (page?: number, limit?: number, search?: string) => {
 
-    return data.data.categorias;
+    const params = new URLSearchParams();
+    if (page !== undefined) {
+      params.append('offset', page.toString());
+    }
+    if (limit !== undefined) {
+      params.append('limit', limit.toString());
+    }
+    if (search) {
+      params.append('search', search);
+    }
+
+    const { data } = await API.get<ApiResponse<CategoryResponse>>(`/categorias?${params.toString()}`);
+
+    return data.data;
   },
 
   getById: async (id: string) => {
