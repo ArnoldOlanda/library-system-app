@@ -15,6 +15,7 @@ export interface TableProps<T,U>{
   isLoading: boolean;
   data?: T;
   onEdit: (item: U) => void;
+  onView?: (item: U) => void;
   onDelete: (item: U) => void;
   search?: string;
   onSearchChange: (search?: string) => void;

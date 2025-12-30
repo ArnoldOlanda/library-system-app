@@ -7,11 +7,18 @@ import type {
 } from '../interfaces';
 
 export const comprasService = {
-  getAll: async (limit: number = 10, offset: number = 0) => {
-    const response = await API.get<ApiResponse<CompraResponse>>(
-      `/compras?limit=${limit}&offset=${offset}`
+  getAll: async (offset?: number, limit?: number, search?: string) => {
+    
+    const params = new URLSearchParams();
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (offset !== undefined) params.append('offset', offset.toString());
+    if (search) params.append('search', search);
+
+    const {data} = await API.get<ApiResponse<CompraResponse>>(
+      `/compras?${params.toString()}`
     );
-    return response.data.data;
+    
+    return data.data;
   },
 
   getById: async (id: string) => {

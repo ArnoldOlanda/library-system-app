@@ -4,10 +4,10 @@ import type { CreateProveedorDto, UpdateProveedorDto } from '../interfaces';
 
 const QUERY_KEY = 'proveedores';
 
-export const useProveedores = (page: number = 1, limit: number = 10) => {
+export const useProveedores = (page?: number, limit?: number, search?: string) => {
   return useQuery({
-    queryKey: [QUERY_KEY, page, limit],
-    queryFn: () => proveedoresService.getAll(page, limit),
+    queryKey: [QUERY_KEY, page, limit, search],
+    queryFn: () => proveedoresService.getAll(page, limit, search),
   });
 };
 

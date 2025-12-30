@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function Compras() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -29,8 +30,14 @@ export function Compras() {
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [compraToDelete, setCompraToDelete] = useState<Compra | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  
+  // Debounce search para evitar peticiones excesivas
+  const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading, error } = useCompras(50, 0);
+  const { data, isLoading, error } = useCompras(page, pageSize, debouncedSearch);
   const createMutation = useCreateCompra();
   const deleteMutation = useDeleteCompra();
 
@@ -115,9 +122,15 @@ export function Compras() {
       </div>
 
       <ComprasTable
-        data={data?.compras || []}
+        isLoading={isLoading}
+        data={data}
         onView={handleView}
+        onEdit={()=>{}}
         onDelete={handleDelete}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+        search={search}
+        onSearchChange={setSearch}
       />
 
       <CompraDialog

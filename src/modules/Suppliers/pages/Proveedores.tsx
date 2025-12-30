@@ -21,15 +21,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function Proveedores() {
-  const [page] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProveedor, setSelectedProveedor] = useState<Proveedor | undefined>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [proveedorToDelete, setProveedorToDelete] = useState<Proveedor | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState<string | undefined>(undefined);
 
-  const { data, isLoading, error } = useProveedores(page, 10);
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data, isLoading, error } = useProveedores(page, pageSize, debouncedSearch);
   const createMutation = useCreateProveedor();
   const updateMutation = useUpdateProveedor();
   const deleteMutation = useDeleteProveedor();
@@ -88,17 +93,6 @@ export default function Proveedores() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <p className="mt-2 text-sm text-muted-foreground">Cargando proveedores...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
@@ -125,9 +119,14 @@ export default function Proveedores() {
       </div>
 
       <ProveedoresTable
-        data={data?.proveedores || []}
+        isLoading={isLoading}
+        data={data}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
       />
 
       <ProveedorDialog

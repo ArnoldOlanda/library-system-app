@@ -1,15 +1,5 @@
-import { useState } from 'react';
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  type SortingState,
-  type ColumnFiltersState,
-  type ColumnDef,
-} from '@tanstack/react-table';
+import { flexRender, type ColumnDef } from '@tanstack/react-table';
+import { Pencil, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -20,18 +10,22 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { Proveedor } from '../interfaces';
-import { Pencil, Trash2 } from 'lucide-react';
+import type { Proveedor, ProveedorResponse } from '../interfaces';
+import type { TableProps } from '@/interfaces';
+import { useTable } from '@/hooks/useTable';
+import { Pagination } from '@/components/Pagination';
 
-interface ProveedoresTableProps {
-  data: Proveedor[];
-  onEdit: (proveedor: Proveedor) => void;
-  onDelete: (proveedor: Proveedor) => void;
-}
 
-export function ProveedoresTable({ data, onEdit, onDelete }: ProveedoresTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+export function ProveedoresTable({
+  isLoading,
+  data,
+  onEdit,
+  onDelete,
+  search,
+  onSearchChange,
+  onPageChange,
+  onPageSizeChange,
+}: TableProps<ProveedorResponse, Proveedor>) {
 
   const columns: ColumnDef<Proveedor>[] = [
     {
@@ -69,7 +63,7 @@ export function ProveedoresTable({ data, onEdit, onDelete }: ProveedoresTablePro
       cell: ({ row }) => {
         const direccion = row.getValue('direccion') as string;
         return (
-          <div className="max-w-[200px] truncate text-sm" title={direccion}>
+          <div className="max-w-50 truncate text-sm" title={direccion}>
             {direccion || '-'}
           </div>
         );
@@ -103,19 +97,12 @@ export function ProveedoresTable({ data, onEdit, onDelete }: ProveedoresTablePro
     },
   ];
 
-  const table = useReactTable({
+  const { pagination, table } = useTable<ProveedorResponse, Proveedor>({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      sorting,
-      columnFilters,
-    },
+    key: 'proveedores',
+    onPageSizeChange,
+    onPageChange
   });
 
   return (
@@ -123,81 +110,72 @@ export function ProveedoresTable({ data, onEdit, onDelete }: ProveedoresTablePro
       <div className="flex items-center justify-between">
         <Input
           placeholder="Filtrar por nombre..."
-          value={(table.getColumn('nombre')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('nombre')?.setFilterValue(event.target.value)
-          }
+          value={search ?? ''}
+          onChange={(event) => {
+            const value = event.target.value;
+            onSearchChange(value || undefined);
+          }}
           className="max-w-sm"
         />
       </div>
 
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-muted-foreground">Cargando proveedores...</div>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No se encontraron resultados.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
+
       </div>
 
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
-      </div>
+      <Pagination table={table} pagination={pagination} />
     </div>
   );
 }

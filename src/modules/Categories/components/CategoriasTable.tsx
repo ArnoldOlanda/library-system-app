@@ -1,15 +1,4 @@
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  type SortingState,
-  type ColumnFiltersState,
-  getFilteredRowModel,
-  type PaginationState,
-} from '@tanstack/react-table';
-import { useState, useEffect } from 'react';
+import { type ColumnDef, flexRender } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { Categoria, CategoryResponse } from '../interfaces';
 import { Button } from '@/components/ui/button';
@@ -24,6 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Pagination } from '@/components/Pagination';
 import type { TableProps } from '@/interfaces';
+import { useTable } from '@/hooks/useTable';
 
 export function CategoriasTable({ 
   isLoading,
@@ -35,22 +25,6 @@ export function CategoriasTable({
   onPageChange,
   onPageSizeChange 
 }: TableProps<CategoryResponse, Categoria>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: data ? data.offset - 1 : 0,
-    pageSize: data?.limit || 10,
-  });
-
-  // Sincronizar estado de paginación cuando cambien los datos del servidor
-  useEffect(() => {
-    if (data) {
-      setPagination({
-        pageIndex: data.offset - 1,
-        pageSize: data.limit,
-      });
-    }
-  }, [data]);
 
   const columns: ColumnDef<Categoria>[] = [
     {
@@ -102,32 +76,12 @@ export function CategoriasTable({
     },
   ];
 
-  const table = useReactTable({
-    data: data?.categorias || [],
+  const {table, pagination} = useTable<CategoryResponse, Categoria>({
+    data,
     columns,
-    pageCount: data?.pages || 0,
-    rowCount: data?.total || 0,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    manualPagination: true,
-    onPaginationChange: (updater) => {
-      const newPagination = typeof updater === 'function' ? updater(pagination) : updater;
-
-      if (newPagination.pageSize !== pagination.pageSize) {
-        onPageSizeChange(newPagination.pageSize);
-      }
-      if (newPagination.pageIndex !== pagination.pageIndex) {
-        onPageChange(newPagination.pageIndex + 1);
-      }
-    },
-    state: {
-      sorting,
-      columnFilters,
-      pagination,
-    },
+    key: 'categorias',
+    onPageSizeChange,
+    onPageChange
   });
 
   return (
@@ -135,7 +89,7 @@ export function CategoriasTable({
       <div className="flex items-center gap-2">
         <Input
           placeholder="Buscar por nombre..."
-          value={search}
+          value={search ?? ''}
           onChange={(event) => {
             const value = event.target.value;
             onSearchChange(value || undefined);

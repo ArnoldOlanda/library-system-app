@@ -1,13 +1,5 @@
-import { useState } from 'react';
 import {
   flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  type SortingState,
-  type ColumnFiltersState,
   type ColumnDef,
 } from '@tanstack/react-table';
 import {
@@ -21,20 +13,25 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import type { Compra } from '../interfaces';
+import type { Compra, CompraResponse } from '../interfaces';
 import { Eye, Trash2 } from 'lucide-react';
 import { format } from '@formkit/tempo';
+import type { TableProps } from '@/interfaces';
+import { useTable } from '@/hooks/useTable';
+import { Pagination } from '@/components/Pagination';
 
-interface ComprasTableProps {
-  data: Compra[];
-  onView: (compra: Compra) => void;
-  onDelete: (compra: Compra) => void;
-}
 
-export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
+export function ComprasTable({ 
+  isLoading,
+  data, 
+  onView, 
+  onDelete,
+  onPageChange,
+  onPageSizeChange,
+  onSearchChange,
+  search, 
+}: TableProps<CompraResponse, Compra>) {
+  
   const columns: ColumnDef<Compra>[] = [
     {
       accessorKey: 'fechaCompra',
@@ -91,7 +88,7 @@ export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => onView(compra)}
+              onClick={() => onView && onView(compra)}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -108,19 +105,12 @@ export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
     },
   ];
 
-  const table = useReactTable({
+  const {pagination, table} = useTable<CompraResponse, Compra>({
+    key: 'compras',
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      sorting,
-      columnFilters,
-    },
+    onPageChange,
+    onPageSizeChange,
   });
 
   return (
@@ -128,16 +118,22 @@ export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
       <div className="flex items-center gap-2">
         <Input
           placeholder="Filtrar por proveedor..."
-          value={(table.getColumn('proveedor')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('proveedor')?.setFilterValue(event.target.value)
-          }
+          value={search ?? ''}
+          onChange={(event) =>{
+            const value = event.target.value;
+            onSearchChange(value || undefined);
+          }}
           className="max-w-sm"
         />
       </div>
 
       <div className="rounded-md border">
-        <Table>
+        { isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-muted-foreground">Cargando compras...</div>
+          </div>
+          ):(
+            <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -183,26 +179,12 @@ export function ComprasTable({ data, onView, onDelete }: ComprasTableProps) {
             )}
           </TableBody>
         </Table>
+          ) 
+       }
+        
       </div>
 
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
-      </div>
+      <Pagination table={table} pagination={pagination}/>
     </div>
   );
 }

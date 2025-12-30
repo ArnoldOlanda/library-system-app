@@ -25,6 +25,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { TableProps } from '@/interfaces';
 import { Pagination } from '@/components/Pagination';
+import { useTable } from '@/hooks/useTable';
 
 export function ProductosTable({
   isLoading,
@@ -36,21 +37,6 @@ export function ProductosTable({
   onPageChange,
   onPageSizeChange
 }: TableProps<ProductResponse, Producto>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: data ? data.offset - 1 : 0,
-    pageSize: data?.limit || 10,
-  });
-
-  useEffect(() => {
-    if (data) {
-      setPagination({
-        pageIndex: data.offset - 1,
-        pageSize: data.limit,
-      });
-    }
-  }, [data]);
 
   const columns: ColumnDef<Producto>[] = [
     {
@@ -139,31 +125,12 @@ export function ProductosTable({
     },
   ];
 
-  const table = useReactTable({
-    data: data?.productos ?? [],
+  const {pagination, table} = useTable<ProductResponse, Producto>({
+    data,
     columns,
-    pageCount: data?.pages || 0,
-    rowCount: data?.total || 0,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    manualPagination: true,
-    onPaginationChange: (updater) => {
-      const newPagination = typeof updater === 'function' ? updater(pagination) : updater;
-      if (newPagination.pageSize !== pagination.pageSize) {
-        onPageSizeChange(newPagination.pageSize);
-      }
-      if (newPagination.pageIndex !== pagination.pageIndex) {
-        onPageChange(newPagination.pageIndex + 1);
-      }
-    },
-    state: {
-      sorting,
-      columnFilters,
-      pagination,
-    },
+    key: 'productos',
+    onPageSizeChange,
+    onPageChange
   });
 
   return (

@@ -8,9 +8,16 @@ import {
 import type { ApiResponse } from '@/interfaces';
 
 export const proveedoresService = {
-  getAll: async (page: number = 1, limit: number = 10) => {
+  getAll: async (page?: number, limit?: number, search?: string) => {
+
+    const params = new URLSearchParams();
+
+    if (page) params.append('offset', page.toString());
+    if (limit) params.append('limit', limit.toString());
+    if (search) params.append('search', search);
+
     const response = await API.get<ApiResponse<ProveedorResponse>>(
-      `/proveedores?offset=${page}&limit=${limit}`
+      `/proveedores?${params.toString()}`
     );
     return response.data.data;
   },

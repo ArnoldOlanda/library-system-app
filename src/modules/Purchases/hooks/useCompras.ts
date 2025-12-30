@@ -4,10 +4,10 @@ import type { CreateCompraDto } from '../interfaces';
 
 const QUERY_KEY = 'compras';
 
-export const useCompras = (limit: number = 10, offset: number = 0) => {
+export const useCompras = (page?: number, pageSize?: number, search?: string) => {
   return useQuery({
-    queryKey: [QUERY_KEY, limit, offset],
-    queryFn: () => comprasService.getAll(limit, offset),
+    queryKey: [QUERY_KEY, page, pageSize, search],
+    queryFn: () => comprasService.getAll(page, pageSize, search),
   });
 };
 
