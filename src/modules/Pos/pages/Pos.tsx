@@ -10,12 +10,12 @@ import { PaymentSelector } from '../components/PaymentSelector';
 import { CustomerSearch } from '../components/CustomerSearch';
 import type { Producto } from '@/modules/Products/interfaces';
 import type { Cliente } from '@/modules/Customers/interfaces';
+import { Input } from '@/components/ui/input';
 
 export function PosPage() {
   const { openCaja, loading: cajaLoading, error: cajaError } = useCaja();
   const {
     cart,
-    formaPago,
     isProcessing,
     addToCart,
     removeFromCart,
@@ -109,10 +109,10 @@ export function PosPage() {
           />
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Fecha de Emisión
               </label>
-              <input
+              <Input
                 type="text"
                 value={new Date().toLocaleDateString()}
                 disabled
@@ -121,7 +121,6 @@ export function PosPage() {
             </div>
             <div>
               <PaymentSelector
-                formaPago={formaPago}
                 onChangeFormaPago={setFormaPago}
               />
             </div>
@@ -160,7 +159,7 @@ export function PosPage() {
 
             <div className="flex flex-col items-end gap-3">
               {/* Financial Summary */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 min-w-[280px]">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 min-w-70">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>

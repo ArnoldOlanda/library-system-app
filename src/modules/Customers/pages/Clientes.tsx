@@ -12,15 +12,22 @@ import {
 } from '../hooks/useClientes';
 import type { CreateClienteDto, Cliente } from '../interfaces';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function Clientes() {
-  const [page] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | undefined>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [clienteToDelete, setClienteToDelete] = useState<Cliente | null>(null);
 
-  const { data, isLoading, error } = useClientes(page, 10);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+
+  // Debounce search para evitar peticiones excesivas
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data, isLoading, error } = useClientes(page, pageSize, debouncedSearch);
   const createMutation = useCreateCliente();
   const updateMutation = useUpdateCliente();
   const deleteMutation = useDeleteCliente();
@@ -79,17 +86,6 @@ export function Clientes() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <p className="mt-2 text-sm text-muted-foreground">Cargando clientes...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
@@ -116,9 +112,17 @@ export function Clientes() {
       </div>
 
       <ClientesTable
-        data={data?.clientes || []}
+        data={data?.data}
+        isLoading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+      }}
       />
 
       <ClienteDialog

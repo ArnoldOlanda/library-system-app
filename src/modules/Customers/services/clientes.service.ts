@@ -8,11 +8,17 @@ import {
 import type { ApiResponse } from '@/interfaces';
 
 export const clientesService = {
-  getAll: async (page: number = 1, limit: number = 10) => {
+  getAll: async (page?: number, limit?: number, search?: string) => {
+
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('offset', page.toString());
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (search) params.append('search', search);
+
     const response = await API.get<ApiResponse<ClienteResponse>>(
-      `/clientes?offset=${page}&limit=${limit}`
+      `/clientes?${params.toString()}`
     );
-    return response.data.data;
+    return response.data;
   },
 
   getById: async (id: string) => {

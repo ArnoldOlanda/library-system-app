@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useClientes } from '@/modules/Customers/hooks/useClientes';
 import type { Cliente } from '@/modules/Customers/interfaces';
+import { Input } from '@/components/ui/input';
 
 interface CustomerSearchProps {
   selectedCustomer: Cliente | null;
@@ -13,7 +14,7 @@ export function CustomerSearch({ selectedCustomer, onSelectCustomer }: CustomerS
   const [showDropdown, setShowDropdown] = useState(false);
   const { data: clientesData, isLoading } = useClientes(1, 50);
 
-  const filteredCustomers = clientesData?.clientes.filter(
+  const filteredCustomers = clientesData?.data.clientes.filter(
     (cliente) =>
       cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.dni?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -33,12 +34,12 @@ export function CustomerSearch({ selectedCustomer, onSelectCustomer }: CustomerS
   return (
     <div className="space-y-3">
       <div className="relative">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Buscar Cliente
         </label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
+          <Input  
             type="text"
             value={searchTerm}
             onChange={(e) => {

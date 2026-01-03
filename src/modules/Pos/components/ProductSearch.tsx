@@ -20,8 +20,8 @@ export function ProductSearch({ onSelectProduct }: ProductSearchProps) {
         setLoading(true);
         try {
             const data = await productosService.getAll(1, 100);
-            setProductos(data);
-            setFilteredProductos(data);
+            setProductos(data.productos);
+            setFilteredProductos(data.productos);
         } catch (error) {
             console.error('Error loading products:', error);
         } finally {

@@ -4,10 +4,10 @@ import type { CreateClienteDto, UpdateClienteDto } from '../interfaces';
 
 const QUERY_KEY = 'clientes';
 
-export const useClientes = (page: number = 1, limit: number = 10) => {
+export const useClientes = (page?: number, limit?: number, search?: string) => {
   return useQuery({
-    queryKey: [QUERY_KEY, page, limit],
-    queryFn: () => clientesService.getAll(page, limit),
+    queryKey: [QUERY_KEY, page, limit, search],
+    queryFn: () => clientesService.getAll(page, limit, search),
   });
 };
 
