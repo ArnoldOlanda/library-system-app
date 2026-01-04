@@ -118,16 +118,19 @@ export default function Proveedores() {
         </Button>
       </div>
 
-      <ProveedoresTable
-        isLoading={isLoading}
-        data={data}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        search={search}
-        onSearchChange={setSearch}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-      />
+      <div className="rounded-lg border bg-card p-6">
+        <ProveedoresTable
+          isLoading={isLoading}
+          data={data}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          search={search}
+          onSearchChange={setSearch}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+        />
+      </div>
+
 
       <ProveedorDialog
         open={dialogOpen}

@@ -11,6 +11,7 @@ import { CustomerSearch } from '../components/CustomerSearch';
 import type { Producto } from '@/modules/Products/interfaces';
 import type { Cliente } from '@/modules/Customers/interfaces';
 import { Input } from '@/components/ui/input';
+import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 
 export function PosPage() {
   const { openCaja, loading: cajaLoading, error: cajaError } = useCaja();
@@ -22,13 +23,20 @@ export function PosPage() {
     updateQuantity,
     clearCart,
     setFormaPago,
+    setSelectedCliente,
     processSale,
   } = usePOS();
 
   const [selectedCustomer, setSelectedCustomer] = useState<Cliente | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const handleSelectProduct = (producto: Producto) => {
     addToCart(producto, 1);
+  };
+
+  const handleSelectCustomer = (customer: Cliente | null) => {
+    setSelectedCustomer(customer);
+    setSelectedCliente(customer?.id);
   };
 
   const handleProcessSale = async () => {
@@ -38,6 +46,7 @@ export function PosPage() {
         position: 'top-center',
       });
       setSelectedCustomer(null);
+      setShowConfirmDialog(false);
     }
   };
 
@@ -87,7 +96,7 @@ export function PosPage() {
       {/* Header with Caja Status */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Punto de Venta</h1>
+          <h1 className="text-3xl font-bold">Punto de Venta</h1>
           <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
             <CheckCircle className="w-4 h-4 text-green-600" />
             <span>Caja abierta</span>
@@ -100,23 +109,23 @@ export function PosPage() {
       </div>
 
       {/* Customer Information Section */}
-      <div className="bg-white border border-gray-300 rounded-lg p-5">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Información del Cliente</h2>
+      <div className="border rounded-lg p-5">
+        <h2 className="text-lg font-semibold mb-4">Información del Cliente</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CustomerSearch
             selectedCustomer={selectedCustomer}
-            onSelectCustomer={setSelectedCustomer}
+            onSelectCustomer={handleSelectCustomer}
           />
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Fecha de Emisión
               </label>
               <Input
                 type="text"
                 value={new Date().toLocaleDateString()}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
               />
             </div>
             <div>
@@ -126,12 +135,47 @@ export function PosPage() {
             </div>
           </div>
         </div>
+        {/* Selected Customer Info */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 py-2 rounded-lg">
+          <div>
+            <label className="text-sm font-medium block mb-1">Nombre</label>
+            <Input
+              value={selectedCustomer?.nombre}
+              readOnly
+              className="bg-white"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium block mb-1">DNI</label>
+            <Input
+              value={selectedCustomer?.dni || ''}
+              readOnly
+              className="bg-white"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium block mb-1">Teléfono</label>
+            <Input
+              value={selectedCustomer?.telefono || ''}
+              readOnly
+              className="bg-white"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium block mb-1">Dirección</label>
+            <Input
+              value={selectedCustomer?.direccion || ''}
+              readOnly
+              className="bg-white"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Product Search and Cart Section */}
-      <div className="bg-white border border-gray-300 rounded-lg p-5">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Productos</h2>
-        
+      <div className="border rounded-lg p-5">
+        <h2 className="text-lg font-semibold mb-4">Productos</h2>
+
         {/* Product Search */}
         <div className="mb-4">
           <ProductSearch onSelectProduct={handleSelectProduct} />
@@ -159,39 +203,69 @@ export function PosPage() {
 
             <div className="flex flex-col items-end gap-3">
               {/* Financial Summary */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 min-w-70">
+              <div className="border rounded-lg p-4 min-w-70">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal:</span>
-                    <span className="font-semibold text-gray-900">S/ {subtotal.toFixed(2)}</span>
+                    <span className="">Subtotal:</span>
+                    <span className="font-semibold">S/ {subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">IGV (18%):</span>
-                    <span className="font-semibold text-gray-900">S/ {igv.toFixed(2)}</span>
+                    <span className="">IGV (18%):</span>
+                    <span className="font-semibold">S/ {igv.toFixed(2)}</span>
                   </div>
                   <div className="border-t border-gray-300 pt-2 flex justify-between">
-                    <span className="font-bold text-gray-900">Total:</span>
-                    <span className="font-bold text-xl text-gray-900">S/ {total.toFixed(2)}</span>
+                    <span className="font-bold">Total:</span>
+                    <span className="font-bold text-xl">S/ {total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Process Sale Button */}
               <button
-                onClick={handleProcessSale}
+                onClick={() => setShowConfirmDialog(true)}
                 disabled={isProcessing}
-                className={`px-8 py-3 rounded-lg font-semibold text-base transition-all ${
-                  isProcessing
+                className={`px-8 py-3 rounded-lg font-semibold text-base transition-all ${isProcessing
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg'
-                }`}
+                  }`}
               >
-                {isProcessing ? 'Procesando...' : 'Guardar Venta'}
+                {isProcessing ? 'Procesando...' : 'Procesar Venta'}
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={showConfirmDialog}
+        setOpen={setShowConfirmDialog}
+        title="Confirmar Venta"
+        description={
+          <div className="space-y-2">
+            <p>¿Está seguro de que desea procesar esta venta?</p>
+            <div className="bg-gray-50 p-3 rounded-md text-sm">
+              <div className="flex justify-between">
+                <span>Total de items:</span>
+                <span className="font-semibold">{cart.items.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total a cobrar:</span>
+                <span className="font-semibold text-lg">S/ {total.toFixed(2)}</span>
+              </div>
+              {selectedCustomer && (
+                <div className="flex justify-between mt-2 pt-2 border-t">
+                  <span>Cliente:</span>
+                  <span className="font-semibold">{selectedCustomer.nombre}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        }
+        confirmText="Procesar Venta"
+        cancelText="Cancelar"
+        onConfirm={handleProcessSale}
+      />
     </div>
   );
 }

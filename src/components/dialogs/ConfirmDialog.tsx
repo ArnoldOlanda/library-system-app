@@ -3,12 +3,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 interface Props{
     open: boolean;
-    setOpen: (open: boolean) => void;
     title: string;
     description: React.ReactNode;
-    onConfirm: () => void;
+    destructive?: boolean;
     cancelText?: string;
     confirmText?: string;
+    setOpen: (open: boolean) => void;
+    onConfirm: () => void;
 }
 
 export const ConfirmDialog = ({
@@ -17,6 +18,7 @@ export const ConfirmDialog = ({
     title,
     description,
     onConfirm,
+    destructive,
     cancelText = 'Cancelar',
     confirmText = 'Confirmar',
 }: Props) => {
@@ -33,7 +35,7 @@ export const ConfirmDialog = ({
             <AlertDialogCancel type='button'>{cancelText}</AlertDialogCancel>
             <AlertDialogAction
               onClick={onConfirm}
-              className="bg-destructive text-white hover:bg-destructive/90"
+              className={ destructive ? 'bg-red-600 hover:bg-red-700 text-white' : '' }
             >
                 {confirmText}
             </AlertDialogAction>

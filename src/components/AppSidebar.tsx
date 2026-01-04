@@ -29,17 +29,17 @@ import { Link } from 'react-router-dom';
 
 const menuItems = [
   { icon: Home, label: 'Inicio', path: '/', group: 'Principal' },
+  { icon: Wallet, label: 'Caja', path: '/caja', group: 'Transacciones' },
+  { icon: Monitor, label: 'POS', path: '/pos', group: 'Transacciones' },
   { icon: Package, label: 'Productos', path: '/productos', group: 'Inventario' },
   { icon: Tags, label: 'Categorías', path: '/categorias', group: 'Inventario' },
   { icon: ArrowLeftRight, label: 'Movimientos', path: '/movimientos-almacen', group: 'Inventario' },
-  { icon: Monitor, label: 'POS', path: '/pos', group: 'Transacciones' },
   { icon: ShoppingBag, label: 'Ventas', path: '/ventas', group: 'Transacciones' },
   { icon: ShoppingCart, label: 'Compras', path: '/compras', group: 'Transacciones' },
-  { icon: Wallet, label: 'Caja', path: '/caja', group: 'Transacciones' },
   { icon: UsersRound, label: 'Clientes', path: '/clientes', group: 'Gestión' },
   { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
-  { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Sistema' },
-  { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Sistema' },
+  { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Gestión' },
+  { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Gestión' },
 ];
 
 const groupedMenuItems = menuItems.reduce((acc, item) => {
@@ -60,7 +60,7 @@ export function AppSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">Sistema Librería</span>
-            <span className="text-xs text-muted-foreground">v1.0.0</span>
+            <span className="text-xs text-muted-foreground">v1.0.2</span>
           </div>
         </div>
       </SidebarHeader>

@@ -1,15 +1,4 @@
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  type SortingState,
-  type ColumnFiltersState,
-  getFilteredRowModel,
-  type PaginationState,
-} from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import {type ColumnDef, flexRender } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {

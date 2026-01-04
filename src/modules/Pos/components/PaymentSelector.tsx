@@ -10,15 +10,15 @@ export function PaymentSelector({ onChangeFormaPago }: Props) {
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Forma de Pago</label>
+            <label className="block text-sm font-medium mb-2">Forma de Pago</label>
             <div className="grid grid-cols-3 gap-2">
                 <Select onValueChange={(value)=>onChangeFormaPago(value as FormaPago)}>
                     <SelectTrigger className='w-70'>
-                        <SelectValue placeholder="Select a fruit" />
+                        <SelectValue placeholder="Selecciona un método de pago" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
+                            <SelectLabel>Formas de Pago</SelectLabel>
                             {formasPago.map((forma) => (
                                 <SelectItem
                                     key={forma}

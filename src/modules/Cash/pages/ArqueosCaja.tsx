@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { RefreshCcw } from 'lucide-react';
 
 
 
@@ -114,7 +115,7 @@ export function ArqueosCaja() {
                       Cerrar Caja del Día
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl lg:w-[40%] sm:w-[90%] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Cerrar Caja</DialogTitle>
                       <DialogDescription>
@@ -129,12 +130,13 @@ export function ArqueosCaja() {
                   </DialogContent>
                 </Dialog>
             )}
-            <button
+            <Button
               onClick={() => refetchHistory()}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold transition-colors"
+              className="px-4 py-2 rounded-lg font-semibold transition-colors"
             >
+              <RefreshCcw />
               Actualizar
-            </button>
+            </Button>
           </div>
         </div>
         <CajaHistoryTable arqueos={arqueos} loading={historyLoading} />

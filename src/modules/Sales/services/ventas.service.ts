@@ -8,10 +8,11 @@ import type {
 } from '../../Pos/interfaces';
 
 export const ventasService = {
-  getAll: async (page: number = 1, limit: number = 10, startDate?: string, endDate?: string) => {
-    let url = `/ventas?offset=${(page - 1) * limit}&limit=${limit}`;
+  getAll: async (page: number = 1, limit: number = 10, startDate?: string, endDate?: string, search?: string) => {
+    let url = `/ventas?offset=${page}&limit=${limit}`;
     if (startDate) url += `&startDate=${startDate}`;
     if (endDate) url += `&endDate=${endDate}`;
+    if (search) url += `&search=${search}`;
     
     const response = await API.get<ApiResponse<VentaResponse>>(url);
     return response.data.data;

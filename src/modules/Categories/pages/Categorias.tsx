@@ -90,8 +90,8 @@ export function Categorias() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6">
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Categorías</h1>
           <p className="text-muted-foreground">
@@ -104,19 +104,21 @@ export function Categorias() {
         </Button>
       </div>
 
-      <CategoriasTable
-        data={categorias}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        search={search}
-        onSearchChange={setSearch}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
-        }}
-      />
+      <div className="rounded-lg border bg-card p-6">
+        <CategoriasTable
+          data={categorias}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          search={search}
+          onSearchChange={setSearch}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+        />
+      </div>
 
       <CategoriaDialog
         open={dialogOpen}

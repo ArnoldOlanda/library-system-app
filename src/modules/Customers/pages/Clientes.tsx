@@ -111,19 +111,23 @@ export function Clientes() {
         </Button>
       </div>
 
-      <ClientesTable
-        data={data?.data}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        search={search}
-        onSearchChange={setSearch}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
-      }}
-      />
+      <div className="rounded-lg border bg-card p-6">
+        <ClientesTable
+          data={data?.data}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          search={search}
+          onSearchChange={setSearch}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+         }}
+        />
+
+      </div>
+
 
       <ClienteDialog
         open={dialogOpen}

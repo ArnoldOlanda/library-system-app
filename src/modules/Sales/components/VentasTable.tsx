@@ -1,13 +1,5 @@
-import { useState } from 'react';
 import {
   flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  type SortingState,
-  type ColumnFiltersState,
   type ColumnDef,
 } from '@tanstack/react-table';
 import {
@@ -21,20 +13,26 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import type { Venta } from '../../Pos/interfaces';
-import { Eye, Trash2 } from 'lucide-react';
+import type { Venta, VentaResponse } from '../../Pos/interfaces';
+import { Ban, Eye } from 'lucide-react';
 import { format } from '@formkit/tempo';
+import { TableButtonAction } from '@/components/TableButtonAction';
+import type { TableProps } from '@/interfaces';
+import { useTable } from '@/hooks/useTable';
+import { Pagination } from '@/components/Pagination';
 
-interface VentasTableProps {
-  data: Venta[];
-  onView: (venta: Venta) => void;
-  onDelete: (venta: Venta) => void;
-}
 
-export function VentasTable({ data, onView, onDelete }: VentasTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
+export function VentasTable({ 
+  isLoading,
+  data, 
+  onView, 
+  onDelete,
+  search,
+  onSearchChange,
+  onPageChange,
+  onPageSizeChange 
+}: TableProps<VentaResponse, Venta>) {
+  
   const columns: ColumnDef<Venta>[] = [
     {
       accessorKey: 'fechaVenta',
@@ -55,6 +53,16 @@ export function VentasTable({ data, onView, onDelete }: VentasTableProps) {
       cell: ({ row }) => (
         <div className="font-medium">
           {row.original.cliente?.nombre || 'Consumidor Final'}
+        </div>
+      ),
+    },
+    {
+      id: 'documento',
+      accessorFn: (row) => row.cliente?.dni || '-',
+      header: 'Documento',
+      cell: ({ row }) => (
+        <div className="text-sm text-gray-600">
+          {row.original.cliente?.dni || '-'}
         </div>
       ),
     },
@@ -100,36 +108,28 @@ export function VentasTable({ data, onView, onDelete }: VentasTableProps) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => onView(venta)}
+              onClick={() => onView && onView(venta)}
             >
               <Eye className="h-4 w-4" />
             </Button>
-            <Button
-              variant="destructive"
-              size="icon"
+            <TableButtonAction 
+              variant='destructive'
+              icon={<Ban className="h-4 w-4" />}
+              tooltipText='Anular Venta'
               onClick={() => onDelete(venta)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            />
           </div>
         );
       },
     },
   ];
 
-  const table = useReactTable({
+  const {pagination, table} = useTable<VentaResponse, Venta>({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      sorting,
-      columnFilters,
-    },
+    key: 'ventas',
+    onPageChange,
+    onPageSizeChange,
   });
 
   return (
@@ -137,81 +137,74 @@ export function VentasTable({ data, onView, onDelete }: VentasTableProps) {
       <div className="flex items-center gap-2">
         <Input
           placeholder="Filtrar por cliente..."
-          value={(table.getColumn('cliente')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('cliente')?.setFilterValue(event.target.value)
-          }
+          value={search ?? ''}
+          onChange={(event) =>{
+            const value = event.target.value;
+            onSearchChange(value || undefined);
+          }}
           className="max-w-sm"
         />
       </div>
 
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+        {
+          isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-muted-foreground">Cargando ventas...</div>
+            </div>
+          ) : (
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No se encontraron resultados.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+          )
+        }
+
       </div>
 
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
-      </div>
+      <Pagination table={table} pagination={pagination}/>
     </div>
   );
 }

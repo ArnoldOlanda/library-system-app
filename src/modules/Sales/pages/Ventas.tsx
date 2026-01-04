@@ -7,26 +7,37 @@ import { toast } from 'sonner';
 import { ventasService } from '../services/ventas.service';
 import type { Venta } from '../../Pos/interfaces';
 import { Filter, X } from 'lucide-react';
+import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export function Ventas() {
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [selectedVenta, setSelectedVenta] = useState<Venta | null>(null);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState<string>();
 
-  const { data, isLoading, refetch } = useVentas(page, limit, startDate, endDate);
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data, isLoading, refetch } = useVentas(page, pageSize, startDate, endDate, debouncedSearch);
 
   const handleDelete = async (venta: Venta) => {
-    if (confirm('¿Estás seguro de eliminar esta venta? Se revertirá el stock de los productos.')) {
-      try {
-        await ventasService.delete(venta.id);
-        toast.success('Venta eliminada correctamente');
-        refetch();
-      } catch (error) {
-        toast.error('Error al eliminar la venta');
-      }
-    }
+    setSelectedVenta(venta);
+    setDeleteDialogOpen(true);
   };
+
+  const confirmDelete = async () => {
+    if(!selectedVenta) return;
+    try {
+      await ventasService.delete(selectedVenta.id);
+      toast.success('Venta eliminada correctamente');
+      refetch();
+    } catch (error) {
+      toast.error('Error al eliminar la venta');
+    }
+  }
 
   const handleView = (venta: Venta) => {
     // Implementar ver detalle (puedes usar un modal)
@@ -41,12 +52,12 @@ export function Ventas() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6">
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold">Ventas</h1>
       </div>
 
-      <div className="bg-white p-4 rounded-lg border shadow-sm space-y-4">
+      <div className="p-4 rounded-lg border shadow-sm py-4 my-2">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Desde:</label>
@@ -81,17 +92,36 @@ export function Ventas() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <p className="text-lg">Cargando ventas...</p>
-        </div>
-      ) : (
+      <div className="rounded-lg border bg-card p-6">
         <VentasTable 
-          data={data?.ventas || []} 
+          isLoading={isLoading}
+          data={data}
           onView={handleView}
           onDelete={handleDelete}
+          onEdit={()=>{}}
+          search={search}
+          onSearchChange={setSearch}
+          onPageChange={setPage}
+          onPageSizeChange={(size)=>{
+            setPageSize(size);
+            setPage(1);
+          }}
         />
-      )}
+      </div>
+
+
+      <ConfirmDialog 
+        title="Confirmar anulación de Venta"
+        description={<>
+          ¿Estás seguro de anular esta venta? Se revertirá el stock de los productos vendidos.
+        </>}
+        confirmText="Anular Venta"
+        cancelText="Cancelar"
+        destructive
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

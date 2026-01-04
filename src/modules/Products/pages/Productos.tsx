@@ -20,7 +20,7 @@ export function Productos() {
   const [search, setSearch] = useState<string | undefined>(undefined);
 
   // Debounce search para evitar peticiones excesivas
-    const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 500);
 
   // Queries y mutaciones
   const { data: productos, isLoading } = useProductos(page, pageSize, debouncedSearch);
@@ -99,17 +99,9 @@ export function Productos() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Cargando productos...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6">
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Productos</h1>
           <p className="text-muted-foreground">
@@ -122,19 +114,22 @@ export function Productos() {
         </Button>
       </div>
 
-      <ProductosTable
-        isLoading={isLoading}
-        data={productos}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        search={search}
-        onSearchChange={setSearch}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
-        }}
-      />
+      <div className="rounded-lg border bg-card p-6">
+        <ProductosTable
+          isLoading={isLoading}
+          data={productos}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          search={search}
+          onSearchChange={setSearch}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+        />
+
+      </div>
 
       <ProductoDialog
         open={dialogOpen}
@@ -154,6 +149,7 @@ export function Productos() {
           </>
         }
         onConfirm={confirmDelete}
+        destructive
         cancelText="Cancelar"
         confirmText={deleteMutation.isPending ? 'Eliminando...' : 'Si, eliminar'}
       />
