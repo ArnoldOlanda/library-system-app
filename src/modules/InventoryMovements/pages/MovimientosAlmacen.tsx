@@ -39,9 +39,7 @@ export default function MovimientosAlmacen() {
         </p>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <MovimientosTable data={data?.movimientos || []} />
-      </div>
+      <MovimientosTable data={data?.movimientos || []} />
     </div>
   );
 }

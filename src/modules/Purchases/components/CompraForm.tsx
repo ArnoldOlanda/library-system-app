@@ -162,7 +162,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {productosData?.map((producto: any) => (
+                          {productosData?.productos.map((producto: any) => (
                             <SelectItem key={producto.id} value={producto.id}>
                               {producto.codigo} - {producto.nombre}
                             </SelectItem>

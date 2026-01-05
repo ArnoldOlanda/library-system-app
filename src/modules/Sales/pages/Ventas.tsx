@@ -57,7 +57,7 @@ export function Ventas() {
         <h1 className="text-4xl font-bold">Ventas</h1>
       </div>
 
-      <div className="p-4 rounded-lg border shadow-sm py-4 my-2">
+      <div className="p-4 rounded-lg border bg-card shadow-sm py-4 my-2">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Desde:</label>
@@ -92,23 +92,20 @@ export function Ventas() {
         </div>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <VentasTable 
-          isLoading={isLoading}
-          data={data}
-          onView={handleView}
-          onDelete={handleDelete}
-          onEdit={()=>{}}
-          search={search}
-          onSearchChange={setSearch}
-          onPageChange={setPage}
-          onPageSizeChange={(size)=>{
-            setPageSize(size);
-            setPage(1);
-          }}
-        />
-      </div>
-
+      <VentasTable 
+        isLoading={isLoading}
+        data={data}
+        onView={handleView}
+        onDelete={handleDelete}
+        onEdit={()=>{}}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={(size)=>{
+          setPageSize(size);
+          setPage(1);
+        }}
+      />
 
       <ConfirmDialog 
         title="Confirmar anulación de Venta"

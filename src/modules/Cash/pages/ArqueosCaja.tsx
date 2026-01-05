@@ -69,7 +69,7 @@ export function ArqueosCaja() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-4xl font-bold mb-2">Gestión de Caja</h1>

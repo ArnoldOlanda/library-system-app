@@ -6,13 +6,19 @@ interface Props {
 }
 
 export function PaymentSelector({ onChangeFormaPago }: Props) {
-    const formasPago: FormaPago[] = ['Efectivo' as FormaPago, 'Tarjeta' as FormaPago, 'Transferencia' as FormaPago];
+    const formasPago: FormaPago[] = [
+        'Efectivo' as FormaPago, 
+        'Tarjeta' as FormaPago, 
+        // 'Transferencia' as FormaPago, 
+        'Yape' as FormaPago, 
+        'Plin' as FormaPago
+    ];
 
     return (
         <div>
             <label className="block text-sm font-medium mb-2">Forma de Pago</label>
             <div className="grid grid-cols-3 gap-2">
-                <Select onValueChange={(value)=>onChangeFormaPago(value as FormaPago)}>
+                <Select onValueChange={(value) => onChangeFormaPago(value as FormaPago)}>
                     <SelectTrigger className='w-70'>
                         <SelectValue placeholder="Selecciona un método de pago" />
                     </SelectTrigger>

@@ -11,7 +11,9 @@ import {
   Wallet,
   ArrowLeftRight,
   Truck,
-  Monitor
+  Monitor,
+  FileText,
+  ChevronRight
 } from 'lucide-react';
 import {
   Sidebar,
@@ -22,9 +24,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarFooter,
   SidebarHeader,
 } from '@/components/ui/sidebar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Link } from 'react-router-dom';
 
 const menuItems = [
@@ -40,6 +50,12 @@ const menuItems = [
   { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
   { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Gestión' },
   { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Gestión' },
+];
+
+const reportesSubmenu = [
+  { label: 'Inventario', path: '/reportes/inventario', icon: Package },
+  { label: 'Ventas', path: '/reportes/ventas', icon: ShoppingBag },
+  { label: 'Compras', path: '/reportes/compras', icon: ShoppingCart },
 ];
 
 const groupedMenuItems = menuItems.reduce((acc, item) => {
@@ -81,6 +97,35 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+                
+                {/* Acordeón de Reportes en el grupo Gestión */}
+                {group === 'Gestión' && (
+                  <Collapsible className="group/collapsible">
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton>
+                          <FileText />
+                          <span>Reportes</span>
+                          <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {reportesSubmenu.map((submenu) => (
+                            <SidebarMenuSubItem key={submenu.path}>
+                              <SidebarMenuSubButton asChild>
+                                <Link to={submenu.path}>
+                                  <submenu.icon className="h-4 w-4" />
+                                  <span>{submenu.label}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

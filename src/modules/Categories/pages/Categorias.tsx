@@ -104,7 +104,6 @@ export function Categorias() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
         <CategoriasTable
           data={categorias}
           isLoading={isLoading}
@@ -118,7 +117,6 @@ export function Categorias() {
             setPage(1);
           }}
         />
-      </div>
 
       <CategoriaDialog
         open={dialogOpen}

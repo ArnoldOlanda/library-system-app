@@ -125,7 +125,7 @@ export function ProveedoresTable({
             <div className="text-muted-foreground">Cargando proveedores...</div>
           </div>
         ) : (
-          <Table>
+          <Table className='bg-card'>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

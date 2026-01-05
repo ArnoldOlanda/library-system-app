@@ -6,6 +6,8 @@ export enum FormaPago {
   EFECTIVO = 'Efectivo',
   TARJETA = 'Tarjeta',
   TRANSFERENCIA = 'Transferencia',
+  YAPE = 'Yape',
+  PLIN = 'Plin',
 }
 
 export interface DetalleVenta {

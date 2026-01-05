@@ -114,22 +114,19 @@ export function Productos() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <ProductosTable
-          isLoading={isLoading}
-          data={productos}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          search={search}
-          onSearchChange={setSearch}
-          onPageChange={setPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-          }}
-        />
-
-      </div>
+      <ProductosTable
+        isLoading={isLoading}
+        data={productos}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        search={search}
+        onSearchChange={setSearch}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
+      />
 
       <ProductoDialog
         open={dialogOpen}

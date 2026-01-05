@@ -121,20 +121,17 @@ export function Compras() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <ComprasTable
-          isLoading={isLoading}
-          data={data}
-          onView={handleView}
-          onEdit={()=>{}}
-          onDelete={handleDelete}
-          onPageChange={setPage}
-          onPageSizeChange={setPageSize}
-          search={search}
-          onSearchChange={setSearch}
-        />
-      </div>
-
+      <ComprasTable
+        isLoading={isLoading}
+        data={data}
+        onView={handleView}
+        onEdit={()=>{}}
+        onDelete={handleDelete}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+        search={search}
+        onSearchChange={setSearch}
+      />
 
       <CompraDialog
         open={dialogOpen}

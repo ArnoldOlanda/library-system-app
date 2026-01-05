@@ -153,7 +153,7 @@ export function VentasTable({
               <div className="text-muted-foreground">Cargando ventas...</div>
             </div>
           ) : (
-              <Table>
+              <Table className='bg-card'>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>

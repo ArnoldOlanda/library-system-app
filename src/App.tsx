@@ -16,6 +16,9 @@ import { Compras } from './modules/Purchases/pages/Compras';
 import { Ventas } from './modules/Sales/pages/Ventas';
 import { PosPage } from './modules/Pos/pages/Pos';
 import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
+import { ReporteInventario } from './modules/Reports/pages/ReporteInventario';
+import { ReporteVentas } from './modules/Reports/pages/ReporteVentas';
+import { ReporteCompras } from './modules/Reports/pages/ReporteCompras';
 import { Layout } from './layout';
 import { ThemeProvider } from './components/ThemeProvider';
 
@@ -48,6 +51,9 @@ function App() {
               <Route path="ventas" element={<Ventas />} />
               <Route path="pos" element={<PosPage />} />
               <Route path="caja" element={<ArqueosCaja />} />
+              <Route path="reportes/inventario" element={<ReporteInventario />} />
+              <Route path="reportes/ventas" element={<ReporteVentas />} />
+              <Route path="reportes/compras" element={<ReporteCompras />} />
               <Route path="configuracion" element={<Settings />} />
             </Route>
 

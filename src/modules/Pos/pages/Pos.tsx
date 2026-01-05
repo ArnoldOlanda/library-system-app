@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, BrushCleaning, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCaja } from '@/modules/Cash/hooks/useCaja';
 import { usePOS } from '../hooks/usePOS';
@@ -12,6 +12,7 @@ import type { Producto } from '@/modules/Products/interfaces';
 import type { Cliente } from '@/modules/Customers/interfaces';
 import { Input } from '@/components/ui/input';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
+import { Button } from '@/components/ui/button';
 
 export function PosPage() {
   const { openCaja, loading: cajaLoading, error: cajaError } = useCaja();
@@ -92,7 +93,7 @@ export function PosPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header with Caja Status */}
       <div className="flex items-center justify-between">
         <div>
@@ -109,7 +110,7 @@ export function PosPage() {
       </div>
 
       {/* Customer Information Section */}
-      <div className="border rounded-lg p-5">
+      <div className="border rounded-lg p-5 bg-card">
         <h2 className="text-lg font-semibold mb-4">Información del Cliente</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CustomerSearch
@@ -173,7 +174,7 @@ export function PosPage() {
       </div>
 
       {/* Product Search and Cart Section */}
-      <div className="border rounded-lg p-5">
+      <div className="border rounded-lg p-5 bg-card">
         <h2 className="text-lg font-semibold mb-4">Productos</h2>
 
         {/* Product Search */}
@@ -192,13 +193,14 @@ export function PosPage() {
         {cart.items.length > 0 && (
           <div className="mt-6 flex justify-between items-end">
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={clearCart}
                 disabled={isProcessing}
                 className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 rounded-lg font-medium text-gray-700 transition-colors"
               >
+                <BrushCleaning />
                 Limpiar
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-col items-end gap-3">
@@ -221,16 +223,16 @@ export function PosPage() {
               </div>
 
               {/* Process Sale Button */}
-              <button
+              <Button
                 onClick={() => setShowConfirmDialog(true)}
                 disabled={isProcessing}
                 className={`px-8 py-3 rounded-lg font-semibold text-base transition-all ${isProcessing
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg'
+                    : 'bg-green-500 hover:bg-green-600 dark:bg-green-800 dark:hover:bg-green-900 text-white shadow-md hover:shadow-lg'
                   }`}
               >
                 {isProcessing ? 'Procesando...' : 'Procesar Venta'}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -244,7 +246,7 @@ export function PosPage() {
         description={
           <div className="space-y-2">
             <p>¿Está seguro de que desea procesar esta venta?</p>
-            <div className="bg-gray-50 p-3 rounded-md text-sm">
+            <div className="bg-gray-50 dark:bg-neutral-900 p-3 rounded-md text-sm">
               <div className="flex justify-between">
                 <span>Total de items:</span>
                 <span className="font-semibold">{cart.items.length}</span>

@@ -105,7 +105,7 @@ export function CategoriasTable({
               <div className="text-muted-foreground">Cargando categorías...</div>
             </div>
           ) : (
-            <Table>
+            <Table className='bg-card'>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

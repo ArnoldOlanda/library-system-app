@@ -17,7 +17,7 @@ export function CajaStatus({ caja, loading }: CajaStatusProps) {
 
     if (!caja) {
         return (
-            <Alert className='border-yellow-400 bg-yellow-50/50'>
+            <Alert className='border-yellow-400 dark:border-yellow-600 bg-yellow-50/50 dark:bg-yellow-900/20'>
                 <TriangleAlert color='#d09311'/>
                 <AlertTitle className='text-yellow-600'>No hay caja abierta</AlertTitle>
                 <AlertDescription className='text-yellow-600'>
@@ -28,7 +28,7 @@ export function CajaStatus({ caja, loading }: CajaStatusProps) {
     }
 
     return (
-        <div className="bg-green-50/10 text-gray-800 p-2 rounded-lg">
+        <div className="bg-green-50/10 p-4 rounded-lg">
             <h3 className="text-xl font-bold mb-4">Caja del Día</h3>
             <div className="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-4 sm:grid-cols-3 gap-4">
                 <div>

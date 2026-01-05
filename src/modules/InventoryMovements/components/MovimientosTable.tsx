@@ -194,7 +194,7 @@ export function MovimientosTable({ data }: MovimientosTableProps) {
       </div>
 
       <div className="rounded-md border">
-        <Table>
+        <Table className='bg-card'>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
