@@ -32,4 +32,4 @@ export interface CreateProductoDto {
   estado?: boolean;
 }
 
-export interface UpdateProductoDto extends Partial<CreateProductoDto> {}
+export type UpdateProductoDto = Partial<CreateProductoDto>;

@@ -2,13 +2,15 @@ import type { Pagination } from "@/interfaces";
 import type { Cliente } from "@/modules/Customers/interfaces";
 import type { Producto } from "@/modules/Products/interfaces";
 
-export enum FormaPago {
-  EFECTIVO = 'Efectivo',
-  TARJETA = 'Tarjeta',
-  TRANSFERENCIA = 'Transferencia',
-  YAPE = 'Yape',
-  PLIN = 'Plin',
-}
+export const FormaPago = {
+  EFECTIVO: 'Efectivo',
+  TARJETA: 'Tarjeta',
+  TRANSFERENCIA: 'Transferencia',
+  YAPE: 'Yape',
+  PLIN: 'Plin',
+} as const;
+
+export type FormaPago = typeof FormaPago[keyof typeof FormaPago];
 
 export interface DetalleVenta {
   id: string;
@@ -45,7 +47,7 @@ export interface CreateVentaDto {
   detalles: CreateDetalleVentaDto[];
 }
 
-export interface UpdateVentaDto extends Partial<CreateVentaDto> {}
+export type UpdateVentaDto = Partial<CreateVentaDto>;
 
 // Interfaces para el carrito de compras del POS
 export interface CartItem {

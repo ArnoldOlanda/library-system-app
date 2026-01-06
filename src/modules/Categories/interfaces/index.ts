@@ -17,4 +17,4 @@ export interface CreateCategoriaDto {
   descripcion?: string;
 }
 
-export interface UpdateCategoriaDto extends Partial<CreateCategoriaDto> {}
+export type UpdateCategoriaDto = Partial<CreateCategoriaDto>;
