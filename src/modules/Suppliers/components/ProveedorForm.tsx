@@ -19,7 +19,6 @@ const proveedorSchema = z.object({
   contacto: z.string().max(100, 'Máximo 100 caracteres').optional().or(z.literal('')),
   telefono: z.string().max(20, 'Máximo 20 caracteres').optional().or(z.literal('')),
   correo: z
-    .string()
     .email('Correo inválido')
     .optional()
     .or(z.literal('')),
