@@ -35,7 +35,7 @@ export const usePOS = () => {
         newItems[existingItemIndex] = {
           ...newItems[existingItemIndex],
           cantidad: newCantidad,
-          subtotal: newCantidad * Number(producto.precioVenta),
+          subtotal: newCantidad * newItems[existingItemIndex].precioUnitario,
         };
       } else {
         // Validar stock antes de agregar
@@ -48,6 +48,7 @@ export const usePOS = () => {
         const newItem: CartItem = {
           producto,
           cantidad,
+          precioUnitario: Number(producto.precioVenta),
           subtotal: cantidad * Number(producto.precioVenta),
         };
         newItems = [...prevCart.items, newItem];
@@ -109,7 +110,7 @@ export const usePOS = () => {
       newItems[itemIndex] = {
         ...item,
         cantidad,
-        subtotal: cantidad * Number(item.producto.precioVenta),
+        subtotal: cantidad * item.precioUnitario,
       };
 
       const total = newItems.reduce((sum, item) => sum + item.subtotal, 0);
@@ -119,6 +120,39 @@ export const usePOS = () => {
         items: newItems,
         total,
         itemCount,
+      };
+    });
+  }, []);
+
+  const updatePrecioUnitario = useCallback((productoId: string, precio: number) => {
+    setCart((prevCart) => {
+      const itemIndex = prevCart.items.findIndex(
+        (item) => item.producto.id === productoId
+      );
+
+      if (itemIndex < 0) return prevCart;
+
+      const item = prevCart.items[itemIndex];
+
+      // Validar que el precio sea positivo
+      if (precio < 0) {
+        alert('El precio unitario debe ser positivo');
+        return prevCart;
+      }
+
+      const newItems = [...prevCart.items];
+      newItems[itemIndex] = {
+        ...item,
+        precioUnitario: precio,
+        subtotal: item.cantidad * precio,
+      };
+
+      const total = newItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+      return {
+        ...prevCart,
+        items: newItems,
+        total,
       };
     });
   }, []);
@@ -149,7 +183,7 @@ export const usePOS = () => {
         detalles: cart.items.map((item) => ({
           productoId: item.producto.id,
           cantidad: item.cantidad,
-          precioUnitario: Number(item.producto.precioVenta),
+          precioUnitario: item.precioUnitario,
         })),
       };
 
@@ -173,6 +207,7 @@ export const usePOS = () => {
     addToCart,
     removeFromCart,
     updateQuantity,
+    updatePrecioUnitario,
     clearCart,
     setSelectedCliente,
     setFormaPago,

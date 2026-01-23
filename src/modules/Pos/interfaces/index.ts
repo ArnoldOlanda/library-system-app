@@ -53,6 +53,7 @@ export type UpdateVentaDto = Partial<CreateVentaDto>;
 export interface CartItem {
   producto: Producto;
   cantidad: number;
+  precioUnitario: number;
   subtotal: number;
 }
 

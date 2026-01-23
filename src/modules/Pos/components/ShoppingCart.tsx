@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button';
 interface ShoppingCartProps {
     items: CartItem[];
     onUpdateQuantity: (productoId: string, cantidad: number) => void;
+    onUpdatePrecioUnitario: (productoId: string, precio: number) => void;
     onRemoveItem: (productoId: string) => void;
 }
 
-export function ShoppingCart({ items, onUpdateQuantity, onRemoveItem }: ShoppingCartProps) {
+export function ShoppingCart({ items, onUpdateQuantity, onUpdatePrecioUnitario, onRemoveItem }: ShoppingCartProps) {
     if (items.length === 0) {
         return (
             <div className="text-center py-12 border rounded-lg">
@@ -73,8 +74,18 @@ export function ShoppingCart({ items, onUpdateQuantity, onRemoveItem }: Shopping
                                     </Button>
                                 </div>
                             </td>
-                            <td className="px-4 py-3 text-right text-sm font-medium">
-                                {Number(item.producto.precioVenta).toFixed(2)}
+                            <td className="px-4 py-3 text-right">
+                                <input
+                                    type="number"
+                                    value={item.precioUnitario.toFixed(2)}
+                                    onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        onUpdatePrecioUnitario(item.producto.id, value);
+                                    }}
+                                    className="w-24 text-right border border-gray-300 rounded px-2 py-1 text-sm font-medium"
+                                    min="0"
+                                    step="0.01"
+                                />
                             </td>
                             <td className="px-4 py-3 text-right text-sm font-bold">
                                 {item.subtotal.toFixed(2)}

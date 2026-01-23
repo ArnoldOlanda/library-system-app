@@ -22,6 +22,7 @@ export function PosPage() {
     addToCart,
     removeFromCart,
     updateQuantity,
+    updatePrecioUnitario,
     clearCart,
     setFormaPago,
     setSelectedCliente,
@@ -186,6 +187,7 @@ export function PosPage() {
         <ShoppingCart
           items={cart.items}
           onUpdateQuantity={updateQuantity}
+          onUpdatePrecioUnitario={updatePrecioUnitario}
           onRemoveItem={removeFromCart}
         />
 
