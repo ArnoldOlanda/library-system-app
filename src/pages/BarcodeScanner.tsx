@@ -289,21 +289,39 @@ export default function BarcodeScanner() {
         const readerId = qrReaderIdRef.current;
         html5QrCodeRef.current = new Html5Qrcode(readerId);
 
-        const devices = await Html5Qrcode.getCameras();
-        const cameraId = devices && devices.length > 0 ? devices[0].id : { facingMode: 'environment' };
+        // Intentar primero con facingMode: environment (cámara trasera)
+        try {
+          await html5QrCodeRef.current.start(
+            { facingMode: 'environment' },
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+            },
+            (decodedText) => {
+              // QR escaneado - vincular
+              handleLinkWithQR(decodedText);
+            },
+            () => {}
+          );
+        } catch (err) {
+          // Si falla, buscar explícitamente cámara trasera en la lista
+          const devices = await Html5Qrcode.getCameras();
+          // Buscar cámara trasera por label o usar la última (suele ser trasera)
+          const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('trasera'));
+          const cameraId = backCamera ? backCamera.id : (devices.length > 1 ? devices[devices.length - 1].id : devices[0].id);
 
-        await html5QrCodeRef.current.start(
-          cameraId,
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-          },
-          (decodedText) => {
-            // QR escaneado - vincular
-            handleLinkWithQR(decodedText);
-          },
-          () => {}
-        );
+          await html5QrCodeRef.current.start(
+            cameraId,
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+            },
+            (decodedText) => {
+              handleLinkWithQR(decodedText);
+            },
+            () => {}
+          );
+        }
       } catch (error: any) {
         setErrorMessage('Error al iniciar cámara QR: ' + error.message);
         setIsLinkingQR(false);
@@ -376,40 +394,7 @@ export default function BarcodeScanner() {
         </DialogContent>
       </Dialog>
 
-      {/* Header con estado de conexión */}
-      <Card className="mb-4">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Barcode className="h-6 w-6" />
-                Escáner de Códigos de Barras
-              </CardTitle>
-              <CardDescription>
-                Escanea productos para agregarlos al POS
-              </CardDescription>
-            </div>
-            <Badge variant={isConnected ? 'default' : 'destructive'} className="flex items-center gap-1">
-              {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-              {isConnected ? 'Conectado' : 'Desconectado'}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {sessionId && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                ID de Sesión: <code className="text-xs bg-muted px-1 py-0.5 rounded">{sessionId.substring(0, 20)}...</code>
-              </p>
-              <Button onClick={handleUnlink} variant="outline" size="sm">
-                <LinkIcon className="h-3 w-3 mr-1" />
-                Cambiar POS
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
+      
       {/* Input para escanear */}
       <Card className="mb-4">
         <CardContent className="pt-6">
@@ -489,6 +474,40 @@ export default function BarcodeScanner() {
                 {errorMessage}
               </AlertDescription>
             </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Header con estado de conexión */}
+      <Card className="mb-4">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Barcode className="h-6 w-6" />
+                Escáner de Códigos de Barras
+              </CardTitle>
+              <CardDescription>
+                Escanea productos para agregarlos al POS
+              </CardDescription>
+            </div>
+            <Badge variant={isConnected ? 'default' : 'destructive'} className="flex items-center gap-1">
+              {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+              {isConnected ? 'Conectado' : 'Desconectado'}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {sessionId && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                ID de Sesión: <code className="text-xs bg-muted px-1 py-0.5 rounded">{sessionId.substring(0, 20)}...</code>
+              </p>
+              <Button onClick={handleUnlink} variant="outline" size="sm">
+                <LinkIcon className="h-3 w-3 mr-1" />
+                Cambiar POS
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
