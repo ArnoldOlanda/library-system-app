@@ -453,6 +453,11 @@ export default function BarcodeScanner() {
               <div 
                 id={readerIdRef.current}
                 className="border-2 border-primary rounded-lg overflow-hidden"
+                style={{
+                  maxHeight: '350px',
+                  height: '350px',
+                  width: '100%',
+                }}
               />
             </div>
           )}
