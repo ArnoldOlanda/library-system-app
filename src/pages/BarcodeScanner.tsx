@@ -172,18 +172,12 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: (viewfinderWidth) => {
-                // Limitar altura máxima del contenedor
-                // const maxContainerHeight = 250;
-                const qrboxHeight = 80;  // Altura del área de escaneo
-                
-                return {
-                  width: Math.min(viewfinderWidth * 0.9, 350),
-                  height: qrboxHeight
-                };
-              },
-              aspectRatio: 4.0,  // Ratio muy ancho para mantener contenedor bajo
-              disableFlip: false,
+              qrbox: { width: 250, height: 100 },
+              aspectRatio: 1.777778,
+              videoConstraints: {
+                width: { ideal: 640 },
+                height: { ideal: 480 },
+              }
             },
             async (decodedText) => {
               // Escaneo exitoso con cámara
@@ -220,18 +214,12 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: (viewfinderWidth) => {
-                  // Limitar altura máxima del contenedor
-                  // const maxContainerHeight = 250;
-                  const qrboxHeight = 80;  // Altura del área de escaneo
-                  
-                  return {
-                    width: Math.min(viewfinderWidth * 0.9, 350),
-                    height: qrboxHeight
-                  };
-                },
-                aspectRatio: 4.0,  // Ratio muy ancho para mantener contenedor bajo
-                disableFlip: false,
+                qrbox: { width: 250, height: 100 },
+                aspectRatio: 1.777778,
+                videoConstraints: {
+                  width: { ideal: 640 },
+                  height: { ideal: 480 },
+                }
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado con cámara:', decodedText);
