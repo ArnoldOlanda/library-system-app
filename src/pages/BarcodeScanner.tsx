@@ -172,7 +172,7 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: { width: 250, height: 150 },
+              qrbox: { width: 250, height: 200 },
               aspectRatio: 1.777778,
             },
             async (decodedText) => {
@@ -210,7 +210,7 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: { width: 250, height: 150 },
+                qrbox: { width: 250, height: 200 },
                 aspectRatio: 1.777778,
               },
               async (decodedText) => {
@@ -454,8 +454,8 @@ export default function BarcodeScanner() {
                 id={readerIdRef.current}
                 className="border-2 border-primary rounded-lg overflow-hidden"
                 style={{
-                  maxHeight: '350px',
-                  height: '350px',
+                  maxHeight: '300px',
+                  height: '300px',
                   width: '100%',
                 }}
               />
