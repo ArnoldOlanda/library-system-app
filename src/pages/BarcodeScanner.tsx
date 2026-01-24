@@ -172,8 +172,8 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: { width: 250, height: 100 },
-              aspectRatio: 2.5,
+              qrbox: { width: 250, height: 150 },
+              aspectRatio: 1.777778,
             },
             async (decodedText) => {
               // Escaneo exitoso con cámara
@@ -453,7 +453,6 @@ export default function BarcodeScanner() {
               <div 
                 id={readerIdRef.current}
                 className="border-2 border-primary rounded-lg overflow-hidden"
-                style={{ maxHeight: '300px' }}
               />
             </div>
           )}
