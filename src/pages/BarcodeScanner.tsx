@@ -28,24 +28,12 @@ export default function BarcodeScanner() {
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const readerIdRef = useRef<string>('reader-' + Math.random().toString(36).substring(7));
   const qrReaderIdRef = useRef<string>('qr-reader-' + Math.random().toString(36).substring(7));
+  const lastScanRef = useRef<{ barcode: string; timestamp: number } | null>(null);
 
   useEffect(() => {
-    // Solo conectar si NO hay sessionId guardado
-    const savedSessionId = localStorage.getItem('scanner-session-id');
-    
-    if (savedSessionId) {
-      // Reconectar con sessionId guardado
-      console.log('📱 Reconectando con sessionId guardado:', savedSessionId);
-      socketService.connect('scanner', savedSessionId);
-      setSessionId(savedSessionId);
-      setIsConnected(true);
-    } else {
-      // Sin sessionId - mostrar diálogo para vincular
-      setShowQRLinkDialog(true);
-    }
-
-    // Escuchar respuestas exitosas
+    // Definir handlers primero
     const handleScanSuccess = (data: ScanSuccessEvent) => {
+      console.log('✅ Scan success recibido:', data);
       setLastScanned(data.producto);
       setSuccessMessage(
         `✅ Producto enviado a ${data.sentToClients} dispositivo${data.sentToClients !== 1 ? 's' : ''}`
@@ -64,8 +52,8 @@ export default function BarcodeScanner() {
       }, 3000);
     };
 
-    // Escuchar errores
     const handleScanError = (data: ScanErrorEvent) => {
+      console.log('❌ Scan error recibido:', data);
       setErrorMessage(data.message);
       setIsScanning(false);
       
@@ -76,8 +64,21 @@ export default function BarcodeScanner() {
       }, 3000);
     };
 
+    // Registrar listeners ANTES de conectar
     socketService.onScanSuccess(handleScanSuccess);
     socketService.onScanError(handleScanError);
+
+    // Conectar o mostrar diálogo de vinculación
+    const savedSessionId = localStorage.getItem('scanner-session-id');
+    
+    if (savedSessionId) {
+      console.log('📱 Reconectando con sessionId guardado:', savedSessionId);
+      socketService.connect('scanner', savedSessionId);
+      setSessionId(savedSessionId);
+      setIsConnected(true);
+    } else {
+      setShowQRLinkDialog(true);
+    }
 
     // Verificar estado de conexión cada 2 segundos
     const interval = setInterval(() => {
@@ -93,20 +94,41 @@ export default function BarcodeScanner() {
       socketService.offScanSuccess(handleScanSuccess);
       socketService.offScanError(handleScanError);
       socketService.disconnect();
-      // Detener cámara si está activa
       stopCamera();
     };
   }, []);
 
+  // Helper para verificar si se debe procesar el escaneo (evitar duplicados)
+  const shouldProcessScan = (code: string): boolean => {
+    const now = Date.now();
+    const last = lastScanRef.current;
+    
+    // Si es el mismo código escaneado hace menos de 2 segundos, ignorar
+    if (last && last.barcode === code && (now - last.timestamp) < 2000) {
+      console.log('⏭️ Escaneo duplicado ignorado:', code);
+      return false;
+    }
+    
+    // Actualizar último escaneo
+    lastScanRef.current = { barcode: code, timestamp: now };
+    return true;
+  };
+
   const handleScan = async () => {
     if (!barcode.trim()) return;
+
+    const code = barcode.trim();
+    if (!shouldProcessScan(code)) {
+      setBarcode('');
+      return;
+    }
 
     setIsScanning(true);
     setErrorMessage(null);
     setSuccessMessage(null);
 
     try {
-      await socketService.scanBarcode(barcode.trim());
+      await socketService.scanBarcode(code);
       setBarcode('');
       // No quitar isScanning aquí - se quitará en handleScanSuccess o handleScanError
     } catch (error: any) {
@@ -156,6 +178,12 @@ export default function BarcodeScanner() {
             async (decodedText) => {
               // Escaneo exitoso
               console.log('📦 Código escaneado:', decodedText);
+              
+              // Verificar si debe procesarse (evitar duplicados)
+              if (!shouldProcessScan(decodedText.trim())) {
+                return;
+              }
+              
               setBarcode(decodedText);
               setIsScanning(true);
               setErrorMessage(null);
@@ -190,6 +218,12 @@ export default function BarcodeScanner() {
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado:', decodedText);
+                
+                // Verificar si debe procesarse (evitar duplicados)
+                if (!shouldProcessScan(decodedText.trim())) {
+                  return;
+                }
+                
                 setBarcode(decodedText);
                 setIsScanning(true);
                 setErrorMessage(null);
