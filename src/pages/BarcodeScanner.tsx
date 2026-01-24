@@ -172,25 +172,18 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: (viewfinderWidth, viewfinderHeight) => {
-                // Controla el alto máximo del viewfinder
-                const maxHeight = 300;  // Tu altura deseada
-                
-                if (viewfinderHeight > maxHeight) {
-                  // Escalar proporcionalmente
-                  const scale = maxHeight / viewfinderHeight;
-                  return {
-                    width: Math.floor(viewfinderWidth * scale * 0.8),
-                    height: Math.floor(maxHeight * 0.4)
-                  };
-                }
+              qrbox: (viewfinderWidth) => {
+                // Limitar altura máxima del contenedor
+                // const maxContainerHeight = 250;
+                const qrboxHeight = 80;  // Altura del área de escaneo
                 
                 return {
-                  width: Math.floor(viewfinderWidth * 0.8),
-                  height: 100
+                  width: Math.min(viewfinderWidth * 0.9, 350),
+                  height: qrboxHeight
                 };
               },
-              aspectRatio: 2.5,
+              aspectRatio: 4.0,  // Ratio muy ancho para mantener contenedor bajo
+              disableFlip: false,
             },
             async (decodedText) => {
               // Escaneo exitoso con cámara
@@ -227,25 +220,18 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                  // Controla el alto máximo del viewfinder
-                  const maxHeight = 300;  // Tu altura deseada
-                  
-                  if (viewfinderHeight > maxHeight) {
-                    // Escalar proporcionalmente
-                    const scale = maxHeight / viewfinderHeight;
-                    return {
-                      width: Math.floor(viewfinderWidth * scale * 0.8),
-                      height: Math.floor(maxHeight * 0.4)
-                    };
-                  }
+                qrbox: (viewfinderWidth) => {
+                  // Limitar altura máxima del contenedor
+                  // const maxContainerHeight = 250;
+                  const qrboxHeight = 80;  // Altura del área de escaneo
                   
                   return {
-                    width: Math.floor(viewfinderWidth * 0.8),
-                    height: 100
+                    width: Math.min(viewfinderWidth * 0.9, 350),
+                    height: qrboxHeight
                   };
                 },
-                aspectRatio: 2.5,
+                aspectRatio: 4.0,  // Ratio muy ancho para mantener contenedor bajo
+                disableFlip: false,
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado con cámara:', decodedText);
