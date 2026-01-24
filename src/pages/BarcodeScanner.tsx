@@ -176,25 +176,22 @@ export default function BarcodeScanner() {
               aspectRatio: 1.777778,
             },
             async (decodedText) => {
-              // Escaneo exitoso
-              console.log('📦 Código escaneado:', decodedText);
+              // Escaneo exitoso con cámara
+              console.log('📦 Código escaneado con cámara:', decodedText);
               
               // Verificar si debe procesarse (evitar duplicados)
               if (!shouldProcessScan(decodedText.trim())) {
                 return;
               }
               
-              setBarcode(decodedText);
-              setIsScanning(true);
+              // NO cambiar isScanning para escaneo con cámara
               setErrorMessage(null);
-              setSuccessMessage(null);
+              setSuccessMessage('📸 Escaneando...');
 
-              // Enviar código - isScanning se actualizará en los handlers
+              // Enviar código sin cambiar loading del botón
               socketService.scanBarcode(decodedText.trim()).catch((error: any) => {
                 setErrorMessage(error.message || 'Error al escanear código de barras');
-                setIsScanning(false);
               });
-              setBarcode('');
             },
             () => {
               // Error durante el escaneo (puede ignorarse)
@@ -217,24 +214,21 @@ export default function BarcodeScanner() {
                 aspectRatio: 1.777778,
               },
               async (decodedText) => {
-                console.log('📦 Código escaneado:', decodedText);
+                console.log('📦 Código escaneado con cámara:', decodedText);
                 
                 // Verificar si debe procesarse (evitar duplicados)
                 if (!shouldProcessScan(decodedText.trim())) {
                   return;
                 }
                 
-                setBarcode(decodedText);
-                setIsScanning(true);
+                // NO cambiar isScanning para escaneo con cámara
                 setErrorMessage(null);
-                setSuccessMessage(null);
+                setSuccessMessage('📸 Escaneando...');
 
-                // Enviar código - isScanning se actualizará en los handlers
+                // Enviar código sin cambiar loading del botón
                 socketService.scanBarcode(decodedText.trim()).catch((error: any) => {
                   setErrorMessage(error.message || 'Error al escanear código de barras');
-                  setIsScanning(false);
                 });
-                setBarcode('');
               },
               () => {}
             );
