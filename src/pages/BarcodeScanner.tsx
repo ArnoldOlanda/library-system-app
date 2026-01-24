@@ -172,12 +172,8 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: { width: 250, height: 100 },
+              qrbox: { width: 250, height: 150 },
               aspectRatio: 1.777778,
-              videoConstraints: {
-                width: { ideal: 640 },
-                height: { ideal: 480 },
-              }
             },
             async (decodedText) => {
               // Escaneo exitoso con cámara
@@ -214,12 +210,8 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: { width: 250, height: 100 },
+                qrbox: { width: 250, height: 150 },
                 aspectRatio: 1.777778,
-                videoConstraints: {
-                  width: { ideal: 640 },
-                  height: { ideal: 480 },
-                }
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado con cámara:', decodedText);
