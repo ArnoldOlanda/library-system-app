@@ -172,8 +172,25 @@ export default function BarcodeScanner() {
             cameraConfig,
             {
               fps: 10,
-              qrbox: { width: 250, height: 200 },
-              aspectRatio: 1.777778,
+              qrbox: (viewfinderWidth, viewfinderHeight) => {
+                // Controla el alto máximo del viewfinder
+                const maxHeight = 300;  // Tu altura deseada
+                
+                if (viewfinderHeight > maxHeight) {
+                  // Escalar proporcionalmente
+                  const scale = maxHeight / viewfinderHeight;
+                  return {
+                    width: Math.floor(viewfinderWidth * scale * 0.8),
+                    height: Math.floor(maxHeight * 0.4)
+                  };
+                }
+                
+                return {
+                  width: Math.floor(viewfinderWidth * 0.8),
+                  height: 100
+                };
+              },
+              aspectRatio: 2.5,
             },
             async (decodedText) => {
               // Escaneo exitoso con cámara
@@ -210,8 +227,25 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: { width: 250, height: 200 },
-                aspectRatio: 1.777778,
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                  // Controla el alto máximo del viewfinder
+                  const maxHeight = 300;  // Tu altura deseada
+                  
+                  if (viewfinderHeight > maxHeight) {
+                    // Escalar proporcionalmente
+                    const scale = maxHeight / viewfinderHeight;
+                    return {
+                      width: Math.floor(viewfinderWidth * scale * 0.8),
+                      height: Math.floor(maxHeight * 0.4)
+                    };
+                  }
+                  
+                  return {
+                    width: Math.floor(viewfinderWidth * 0.8),
+                    height: 100
+                  };
+                },
+                aspectRatio: 2.5,
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado con cámara:', decodedText);
@@ -453,11 +487,6 @@ export default function BarcodeScanner() {
               <div 
                 id={readerIdRef.current}
                 className="border-2 border-primary rounded-lg overflow-hidden"
-                style={{
-                  maxHeight: '300px',
-                  height: '300px',
-                  width: '100%',
-                }}
               />
             </div>
           )}
