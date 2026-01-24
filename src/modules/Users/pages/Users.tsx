@@ -1,4 +1,4 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -79,7 +79,7 @@ export function Users() {
       if (data.avatar && data.avatar instanceof File) {
         // Convertir archivo a base64
         const reader = new FileReader();
-        const base64Avatar = await new Promise<string>((resolve, reject) => {
+        await new Promise<string>((resolve, reject) => {
           reader.onloadend = () => resolve(reader.result as string);
           reader.onerror = reject;
           reader.readAsDataURL(data.avatar);
