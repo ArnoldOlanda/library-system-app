@@ -62,6 +62,7 @@ export function Productos() {
     // Convertir strings a números
     const productoData = {
       codigo: data.codigo,
+      codigoBarras: data.codigoBarras,
       nombre: data.nombre,
       categoriaId: data.categoriaId,
       precioCompra: parseFloat(data.precioCompra),

@@ -4,6 +4,7 @@ import type { Categoria } from '@/modules/Categories/interfaces';
 export interface Producto {
   id: string;
   codigo: string;
+  codigoBarras?: string;
   nombre: string;
   categoria: Categoria;
   precioCompra: number;
@@ -22,6 +23,7 @@ export interface ProductResponse extends Pagination {
 
 export interface CreateProductoDto {
   codigo: string;
+  codigoBarras?: string;
   nombre: string;
   categoriaId: string;
   precioCompra: number;

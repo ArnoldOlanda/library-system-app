@@ -19,6 +19,7 @@ import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
 import { ReporteInventario } from './modules/Reports/pages/ReporteInventario';
 import { ReporteVentas } from './modules/Reports/pages/ReporteVentas';
 import { ReporteCompras } from './modules/Reports/pages/ReporteCompras';
+import BarcodeScanner from './pages/BarcodeScanner';
 import { Layout } from './layout';
 import { ThemeProvider } from './components/ThemeProvider';
 
@@ -30,6 +31,16 @@ function App() {
           <Routes>
             {/* Ruta pública de login */}
             <Route path="/login" element={<LoginPage />} />
+            
+            {/* Ruta del escáner (sin layout, diseño móvil) */}
+            <Route
+              path="/scanner"
+              element={
+                <ProtectedRoute>
+                  <BarcodeScanner />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Rutas protegidas */}
             <Route

@@ -27,6 +27,11 @@ const productoSchema = z.object({
     .string()
     .min(1, 'El código es requerido')
     .max(50, 'El código no puede exceder 50 caracteres'),
+  codigoBarras: z
+    .string()
+    .max(100, 'El código de barras no puede exceder 100 caracteres')
+    .optional()
+    .or(z.literal('')),
   nombre: z
     .string()
     .min(1, 'El nombre es requerido')
@@ -78,6 +83,7 @@ export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoadi
     resolver: zodResolver(productoSchema),
     defaultValues: {
       codigo: producto?.codigo || '',
+      codigoBarras: producto?.codigoBarras || '',
       nombre: producto?.nombre || '',
       categoriaId: producto?.categoria?.id || '',
       precioCompra: producto?.precioCompra?.toString() || '0',
@@ -121,30 +127,46 @@ export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoadi
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="categoriaId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoría</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="codigoBarras"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Código de Barras (Opcional)</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una categoría" />
-                  </SelectTrigger>
+                  <Input placeholder="Ej: 7501234567890" {...field} />
                 </FormControl>
-                <SelectContent>
-                  {categorias.map((categoria) => (
-                    <SelectItem key={categoria.id} value={categoria.id}>
-                      {categoria.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="categoriaId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categoría</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una categoría" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categorias.map((categoria) => (
+                      <SelectItem key={categoria.id} value={categoria.id}>
+                        {categoria.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <FormField

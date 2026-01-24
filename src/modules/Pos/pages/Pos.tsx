@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, BrushCleaning, CheckCircle } from 'lucide-react';
+import { AlertCircle, BrushCleaning, CheckCircle, Wifi, WifiOff, QrCode, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { QRCodeSVG } from 'qrcode.react';
 import { useCaja } from '@/modules/Cash/hooks/useCaja';
 import { usePOS } from '../hooks/usePOS';
 import { ProductSearch } from '../components/ProductSearch';
@@ -13,6 +14,9 @@ import type { Cliente } from '@/modules/Customers/interfaces';
 import { Input } from '@/components/ui/input';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { socketService, type ProductScannedEvent } from '@/services/socketService';
 
 export function PosPage() {
   const { openCaja, loading: cajaLoading, error: cajaError } = useCaja();
@@ -31,6 +35,52 @@ export function PosPage() {
 
   const [selectedCustomer, setSelectedCustomer] = useState<Cliente | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [showQRDialog, setShowQRDialog] = useState(false);
+  const [posSessionId, setPosSessionId] = useState<string>('');
+
+  // Conectar WebSocket para recibir productos escaneados
+  useEffect(() => {
+    // Generar sessionId único para este POS
+    const uniqueSessionId = `pos-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    setPosSessionId(uniqueSessionId);
+    
+    console.log('🔌 Conectando POS al WebSocket con sessionId:', uniqueSessionId);
+    const socket = socketService.connect('pos', uniqueSessionId);
+    
+    // Esperar a que el socket esté conectado
+    const waitForConnection = () => {
+      if (socket.connected) {
+        console.log('✅ POS conectado y listo para recibir productos');
+        setIsSocketConnected(true);
+      } else {
+        setTimeout(waitForConnection, 100);
+      }
+    };
+    waitForConnection();
+
+    const handleProductScanned = (data: ProductScannedEvent) => {
+      console.log('📦 Producto recibido en POS:', data);
+      addToCart(data.producto, 1);
+      toast.success(`Producto agregado: ${data.producto.nombre}`, {
+        position: 'top-center',
+        duration: 2000,
+      });
+    };
+
+    socketService.onProductScanned(handleProductScanned);
+
+    // Verificar estado de conexión cada 2 segundos
+    const interval = setInterval(() => {
+      setIsSocketConnected(socketService.isConnected());
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+      socketService.offProductScanned(handleProductScanned);
+      socketService.disconnect();
+    };
+  }, [addToCart]);
 
   const handleSelectProduct = (producto: Producto) => {
     addToCart(producto, 1);
@@ -95,7 +145,7 @@ export function PosPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header with Caja Status */}
+      {/* Header with Caja Status and Socket Status */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Punto de Venta</h1>
@@ -108,7 +158,62 @@ export function PosPage() {
             <span>Inicial: S/{Number(openCaja.montoInicial).toFixed(2)}</span>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setShowQRDialog(true)}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <QrCode className="h-4 w-4" />
+            Vincular Escáner
+          </Button>
+          <Badge variant={isSocketConnected ? 'default' : 'secondary'} className="flex items-center gap-1">
+            {isSocketConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+            {isSocketConnected ? 'Escáner Conectado' : 'Escáner Desconectado'}
+          </Badge>
+        </div>
       </div>
+
+      {/* Modal QR Code */}
+      <Dialog open={showQRDialog} onOpenChange={setShowQRDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              Vincular Escáner Móvil
+            </DialogTitle>
+            <DialogDescription>
+              Escanea este código QR desde tu móvil para vincular el escáner a este POS
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center p-6 space-y-4">
+            <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+              <QRCodeSVG
+                value={posSessionId}
+                size={256}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-sm text-muted-foreground">
+                1. Abre <span className="font-semibold">http://[IP-PC]:5173/scanner</span> en tu móvil
+              </p>
+              <p className="text-sm text-muted-foreground">
+                2. Presiona "Vincular con POS"
+              </p>
+              <p className="text-sm text-muted-foreground">
+                3. Escanea este código QR
+              </p>
+            </div>
+            <Button onClick={() => setShowQRDialog(false)} variant="outline" className="w-full">
+              <X className="h-4 w-4 mr-2" />
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Customer Information Section */}
       <div className="border rounded-lg p-5 bg-card">
