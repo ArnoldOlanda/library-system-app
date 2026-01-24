@@ -210,8 +210,8 @@ export default function BarcodeScanner() {
               devices[0].id,
               {
                 fps: 10,
-                qrbox: { width: 250, height: 100 },
-                aspectRatio: 2.5,
+                qrbox: { width: 250, height: 150 },
+                aspectRatio: 1.777778,
               },
               async (decodedText) => {
                 console.log('📦 Código escaneado con cámara:', decodedText);
