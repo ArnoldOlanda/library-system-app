@@ -20,20 +20,6 @@ export interface ScanErrorEvent {
   error?: string;
 }
 
-// Función para obtener sessionId del usuario logueado
-const getSessionIdFromAuth = (): string | undefined => {
-  try {
-    const authData = localStorage.getItem('auth-storage');
-    if (authData) {
-      const parsed = JSON.parse(authData);
-      return parsed.state?.user?.id; // Usar el ID del usuario como sessionId
-    }
-  } catch (error) {
-    console.error('Error obteniendo sessionId:', error);
-  }
-  return undefined;
-};
-
 class SocketService {
   private socket: Socket | null = null;
   private sessionId: string | null = null;
@@ -46,7 +32,7 @@ class SocketService {
     }
 
     // Usar el ID del usuario como sessionId para que todos los dispositivos compartan sesión
-    this.sessionId = sessionId || getSessionIdFromAuth() || this.generateSessionId();
+    this.sessionId = sessionId || this.generateSessionId();
     console.log(`🔌 Conectando socket como ${type} con sesión:`, this.sessionId);
     
     this.socket = io(`${SOCKET_URL}/scanner`, {

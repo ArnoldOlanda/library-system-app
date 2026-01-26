@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useMemo } from 'react';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
@@ -32,7 +32,7 @@ const compraSchema = z.object({
       z.object({
         productoId: z.string().min(1, 'El producto es requerido'),
         cantidad: z.number().min(1, 'La cantidad debe ser mayor a 0'),
-        precioUnitario: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+        precioUnitario: z.string().min(0, 'El precio debe ser mayor o igual a 0'),
       })
     )
     .min(1, 'Debe agregar al menos un producto'),
@@ -53,7 +53,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
     defaultValues: {
       proveedorId: '',
       fechaCompra: new Date().toISOString().split('T')[0],
-      detalles: [{ productoId: '', cantidad: 1, precioUnitario: 0 }],
+      detalles: [{ productoId: '', cantidad: 1, precioUnitario: '0' }],
     },
   });
 
@@ -62,15 +62,15 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
     name: 'detalles',
   });
 
-  const [total, setTotal] = useState(0);
+  const detalles = useWatch({
+    control: form.control,
+    name: 'detalles',
+  });
 
-  const detalles = form.watch('detalles');
-
-  useEffect(() => {
-    const newTotal = detalles.reduce((sum, detalle) => {
-      return sum + (detalle.cantidad || 0) * (detalle.precioUnitario || 0);
-    }, 0);
-    setTotal(newTotal);
+  const total = useMemo(() => {
+    return detalles?.reduce((sum, detalle) => {
+      return sum + (detalle.cantidad || 0) * (Number(detalle.precioUnitario) || 0);
+    }, 0) || 0;
   }, [detalles]);
 
   const handleSubmit = (data: CreateCompraDto) => {
@@ -98,7 +98,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                 <FormLabel>Proveedor *</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className='w-full'>
                       <SelectValue placeholder="Seleccionar proveedor" />
                     </SelectTrigger>
                   </FormControl>
@@ -138,7 +138,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
               variant="outline"
               size="sm"
               onClick={() =>
-                append({ productoId: '', cantidad: 1, precioUnitario: 0 })
+                append({ productoId: '', cantidad: 1, precioUnitario: '0' })
               }
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -157,7 +157,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                       {index === 0 && <FormLabel>Producto</FormLabel>}
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className='w-full'>
                             <SelectValue placeholder="Seleccionar" />
                           </SelectTrigger>
                         </FormControl>
@@ -179,15 +179,19 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                 <FormField
                   control={form.control}
                   name={`detalles.${index}.cantidad`}
-                  render={({ field }) => (
+                  render={({ field: { value, onChange, ...fieldProps } }) => (
                     <FormItem>
                       {index === 0 && <FormLabel>Cantidad</FormLabel>}
                       <FormControl>
                         <Input
                           type="number"
                           min="1"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          value={value || ''}
+                          onChange={(e) => {
+                            const numValue = e.target.valueAsNumber;
+                            onChange(isNaN(numValue) ? 0 : numValue);
+                          }}
+                          {...fieldProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -200,7 +204,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                 <FormField
                   control={form.control}
                   name={`detalles.${index}.precioUnitario`}
-                  render={({ field }) => (
+                  render={({ field: { value, onChange, ...fieldProps } }) => (
                     <FormItem>
                       {index === 0 && <FormLabel>Precio Unit.</FormLabel>}
                       <FormControl>
@@ -208,8 +212,11 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                           type="number"
                           step="0.01"
                           min="0"
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          value={value}
+                          onChange={(e) => {
+                            onChange(e.target.value);  
+                          }}
+                          {...fieldProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -219,14 +226,16 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
               </div>
 
               <div className="col-span-2">
-                {index === 0 && <FormLabel>Subtotal</FormLabel>}
-                <div className="h-10 flex items-center justify-end font-semibold">
-                  S/{' '}
-                  {(
+                {index === 0 && <FormLabel className='mb-2'>Subtotal</FormLabel>}
+                <Input
+                  type="text"
+                  readOnly
+                  value={`S/ ${(
                     (detalles[index]?.cantidad || 0) *
                     (detalles[index]?.precioUnitario || 0)
-                  ).toFixed(2)}
-                </div>
+                  ).toFixed(2)}`}
+                  className="text-right font-semibold w-full"
+                />
               </div>
 
               <div className="col-span-1 flex items-end">

@@ -39,7 +39,7 @@ export interface CompraResponse extends Pagination {
 export interface DetalleCompraDto {
   productoId: string;
   cantidad: number;
-  precioUnitario: number;
+  precioUnitario: string;
 }
 
 export interface CreateCompraDto {

@@ -165,7 +165,7 @@ export default function BarcodeScanner() {
 
         // Intentar primero cámara trasera, si falla usar cualquier cámara
         console.log('📹 Solicitando acceso a cámara trasera...');
-        let cameraConfig = { facingMode: 'environment' };
+        const cameraConfig = { facingMode: 'environment' };
         
         try {
           await html5QrCodeRef.current.start(
@@ -332,6 +332,7 @@ export default function BarcodeScanner() {
             () => {}
           );
         } catch (err) {
+          console.log(err)
           // Si falla, buscar explícitamente cámara trasera en la lista
           const devices = await Html5Qrcode.getCameras();
           // Buscar cámara trasera por label o usar la última (suele ser trasera)
