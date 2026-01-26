@@ -80,7 +80,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
       detalles: data.detalles.map((d) => ({
         ...d,
         cantidad: Number(d.cantidad),
-        precioUnitario: Number(d.precioUnitario),
+        precioUnitario: d.precioUnitario,
       })),
     };
     onSubmit(formattedData);
@@ -232,7 +232,7 @@ export function CompraForm({ onSubmit, onCancel, isLoading }: CompraFormProps) {
                   readOnly
                   value={`S/ ${(
                     (detalles[index]?.cantidad || 0) *
-                    (detalles[index]?.precioUnitario || 0)
+                    (+detalles[index]?.precioUnitario || 0)
                   ).toFixed(2)}`}
                   className="text-right font-semibold w-full"
                 />
