@@ -34,6 +34,9 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           isAuthenticated: false,
         });
+
+        //Limpiar ssesion ID del scanner al cerrar sesion
+        localStorage.removeItem('scanner-session-id');
       },
 
       updateUser: (userData) => {

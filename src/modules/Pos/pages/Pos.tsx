@@ -41,12 +41,20 @@ export function PosPage() {
 
   // Conectar WebSocket para recibir productos escaneados
   useEffect(() => {
-    // Generar sessionId único para este POS
-    const uniqueSessionId = `pos-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-    setPosSessionId(uniqueSessionId);
+    // Generar sessionId único para este POS, primero obtenerlo del localStorage si existe
+    let storedSessionId = localStorage.getItem('scanner-session-id');
     
-    console.log('🔌 Conectando POS al WebSocket con sessionId:', uniqueSessionId);
-    const socket = socketService.connect('pos', uniqueSessionId);
+    if (storedSessionId) {
+      console.log({storedSessionId});
+      setPosSessionId(storedSessionId);
+    } else {
+      storedSessionId = `pos-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      setPosSessionId(storedSessionId);
+      localStorage.setItem('scanner-session-id', storedSessionId);
+    }
+    
+    console.log('🔌 Conectando POS al WebSocket con sessionId:', storedSessionId);
+    const socket = socketService.connect('pos', storedSessionId);
     
     // Esperar a que el socket esté conectado
     const waitForConnection = () => {
