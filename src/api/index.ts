@@ -1,7 +1,9 @@
 import axios from "axios"
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1"
+
 export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1",
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -13,10 +15,22 @@ API.interceptors.response.use(
   async (error) => {
     // Manejar error 401 (No autorizado)
     if (error.response?.status === 401) {
-      // Limpiar auth store y redirigir al login
+      
       const { useAuthStore } = await import('@/stores/authStore');
-      useAuthStore.getState().clearAuth();
-      // window.location.href = '/login';
+      //Llamar al enpoint de revalidacion de token
+      try {
+        const { data } = await API.post<{status: string, timestamp: string, data: { token: string }}>('/auth/refresh-token');
+        const currentUser = useAuthStore.getState().user;
+        useAuthStore.getState().setAuth(currentUser as any, data.data.token);
+        // Reintentar la solicitud original con el nuevo token
+        const originalRequest = error.config;
+        originalRequest.headers['Authorization'] = `Bearer ${data.data.token}`;
+        return API.request(originalRequest);
+      } catch (error) {
+        console.log(error);
+        useAuthStore.getState().clearAuth();
+      }
+
     }
     return Promise.reject(error)
   }
