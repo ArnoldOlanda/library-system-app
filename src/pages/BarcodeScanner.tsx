@@ -4,30 +4,33 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+// import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { socketService, type ScanSuccessEvent, type ScanErrorEvent } from '@/services/socketService';
-import { Loader2, Barcode, CheckCircle2, XCircle, Wifi, WifiOff, Camera, CameraOff, QrCode, Link as LinkIcon } from 'lucide-react';
+import { Loader2, Barcode, CheckCircle2, XCircle, Wifi, WifiOff, Camera, CameraOff } from 'lucide-react';
 import type { Producto } from '@/modules/Products/interfaces';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useSearchParams } from 'react-router-dom';
 
 export default function BarcodeScanner() {
+
+  const [searchParams] = useSearchParams();
+
   const [barcode, setBarcode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(searchParams.get('sessionId'));
   const [lastScanned, setLastScanned] = useState<Producto | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<Array<{ producto: Producto; timestamp: string }>>([]);
   const [isCameraActive, setIsCameraActive] = useState(false);
-  const [showQRLinkDialog, setShowQRLinkDialog] = useState(false);
-  const [isLinkingQR, setIsLinkingQR] = useState(false);
-  
+  // const [showQRLinkDialog, setShowQRLinkDialog] = useState(false);
+  // const [isLinkingQR, setIsLinkingQR] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<any>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const readerIdRef = useRef<string>('reader-' + Math.random().toString(36).substring(7));
-  const qrReaderIdRef = useRef<string>('qr-reader-' + Math.random().toString(36).substring(7));
+  // const qrReaderIdRef = useRef<string>('qr-reader-' + Math.random().toString(36).substring(7));
   const lastScanRef = useRef<{ barcode: string; timestamp: number } | null>(null);
 
   useEffect(() => {
@@ -71,13 +74,26 @@ export default function BarcodeScanner() {
     // Conectar o mostrar diálogo de vinculación
     const savedSessionId = localStorage.getItem('scanner-session-id');
     
-    if (savedSessionId) {
-      console.log('📱 Reconectando con sessionId guardado:', savedSessionId);
-      socketService.connect('scanner', savedSessionId);
-      setSessionId(savedSessionId);
+    //
+    const effectiveSessionId = sessionId || savedSessionId;
+
+    if (effectiveSessionId) {
+      console.log(
+        sessionId && savedSessionId && sessionId === savedSessionId
+          ? '📱 Reconectando con sessionId guardado:'
+          : sessionId && !savedSessionId
+            ? '📱 Guardando nuevo sessionId desde URL:'
+            : '📱 Usando sessionId guardado:',
+        effectiveSessionId
+      );
+
+      if (sessionId && !savedSessionId) {
+        localStorage.setItem('scanner-session-id', sessionId);
+      }
+
+      socketService.connect('scanner', effectiveSessionId);
+      setSessionId(effectiveSessionId);
       setIsConnected(true);
-    } else {
-      setShowQRLinkDialog(true);
     }
 
     // Verificar estado de conexión cada 2 segundos
@@ -96,7 +112,7 @@ export default function BarcodeScanner() {
       socketService.disconnect();
       stopCamera();
     };
-  }, []);
+  }, [sessionId]);
 
   // Helper para verificar si se debe procesar el escaneo (evitar duplicados)
   const shouldProcessScan = (code: string): boolean => {
@@ -283,80 +299,80 @@ export default function BarcodeScanner() {
     }
   };
 
-  const handleLinkWithQR = (scannedSessionId: string) => {
-    // Guardar sessionId en localStorage
-    localStorage.setItem('scanner-session-id', scannedSessionId);
+  // const handleLinkWithQR = (scannedSessionId: string) => {
+  //   // Guardar sessionId en localStorage
+  //   localStorage.setItem('scanner-session-id', scannedSessionId);
     
-    // Conectar con el sessionId del POS
-    socketService.connect('scanner', scannedSessionId);
-    setSessionId(scannedSessionId);
-    setIsConnected(true);
-    setShowQRLinkDialog(false);
-    setIsLinkingQR(false);
+  //   // Conectar con el sessionId del POS
+  //   socketService.connect('scanner', scannedSessionId);
+  //   setSessionId(scannedSessionId);
+  //   setIsConnected(true);
+  //   setShowQRLinkDialog(false);
+  //   setIsLinkingQR(false);
     
-    // Detener cámara QR si está activa
-    if (html5QrCodeRef.current) {
-      html5QrCodeRef.current.stop().catch(() => {});
-    }
-  };
+  //   // Detener cámara QR si está activa
+  //   if (html5QrCodeRef.current) {
+  //     html5QrCodeRef.current.stop().catch(() => {});
+  //   }
+  // };
 
-  const handleUnlink = () => {
-    localStorage.removeItem('scanner-session-id');
-    socketService.disconnect();
-    setSessionId(null);
-    setIsConnected(false);
-    setShowQRLinkDialog(true);
-  };
+  // const handleUnlink = () => {
+  //   localStorage.removeItem('scanner-session-id');
+  //   socketService.disconnect();
+  //   setSessionId(null);
+  //   setIsConnected(false);
+  //   setShowQRLinkDialog(true);
+  // };
 
-  const startQRLinking = () => {
-    setIsLinkingQR(true);
+  // const startQRLinking = () => {
+  //   setIsLinkingQR(true);
     
-    // Usar la cámara para escanear QR del POS
-    setTimeout(async () => {
-      try {
-        const readerId = qrReaderIdRef.current;
-        html5QrCodeRef.current = new Html5Qrcode(readerId);
+  //   // Usar la cámara para escanear QR del POS
+  //   setTimeout(async () => {
+  //     try {
+  //       const readerId = qrReaderIdRef.current;
+  //       html5QrCodeRef.current = new Html5Qrcode(readerId);
 
-        // Intentar primero con facingMode: environment (cámara trasera)
-        try {
-          await html5QrCodeRef.current.start(
-            { facingMode: 'environment' },
-            {
-              fps: 10,
-              qrbox: { width: 250, height: 250 },
-            },
-            (decodedText) => {
-              // QR escaneado - vincular
-              handleLinkWithQR(decodedText);
-            },
-            () => {}
-          );
-        } catch (err) {
-          console.log(err)
-          // Si falla, buscar explícitamente cámara trasera en la lista
-          const devices = await Html5Qrcode.getCameras();
-          // Buscar cámara trasera por label o usar la última (suele ser trasera)
-          const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('trasera'));
-          const cameraId = backCamera ? backCamera.id : (devices.length > 1 ? devices[devices.length - 1].id : devices[0].id);
+  //       // Intentar primero con facingMode: environment (cámara trasera)
+  //       try {
+  //         await html5QrCodeRef.current.start(
+  //           { facingMode: 'environment' },
+  //           {
+  //             fps: 10,
+  //             qrbox: { width: 250, height: 250 },
+  //           },
+  //           (decodedText) => {
+  //             // QR escaneado - vincular
+  //             handleLinkWithQR(decodedText);
+  //           },
+  //           () => {}
+  //         );
+  //       } catch (err) {
+  //         console.log(err)
+  //         // Si falla, buscar explícitamente cámara trasera en la lista
+  //         const devices = await Html5Qrcode.getCameras();
+  //         // Buscar cámara trasera por label o usar la última (suele ser trasera)
+  //         const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('trasera'));
+  //         const cameraId = backCamera ? backCamera.id : (devices.length > 1 ? devices[devices.length - 1].id : devices[0].id);
 
-          await html5QrCodeRef.current.start(
-            cameraId,
-            {
-              fps: 10,
-              qrbox: { width: 250, height: 250 },
-            },
-            (decodedText) => {
-              handleLinkWithQR(decodedText);
-            },
-            () => {}
-          );
-        }
-      } catch (error: any) {
-        setErrorMessage('Error al iniciar cámara QR: ' + error.message);
-        setIsLinkingQR(false);
-      }
-    }, 100);
-  };
+  //         await html5QrCodeRef.current.start(
+  //           cameraId,
+  //           {
+  //             fps: 10,
+  //             qrbox: { width: 250, height: 250 },
+  //           },
+  //           (decodedText) => {
+  //             handleLinkWithQR(decodedText);
+  //           },
+  //           () => {}
+  //         );
+  //       }
+  //     } catch (error: any) {
+  //       setErrorMessage('Error al iniciar cámara QR: ' + error.message);
+  //       setIsLinkingQR(false);
+  //     }
+  //   }, 100);
+  // };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -383,7 +399,7 @@ export default function BarcodeScanner() {
   return (
     <div className="container mx-auto p-4 max-w-2xl">
       {/* Modal para vincular con POS mediante QR */}
-      <Dialog open={showQRLinkDialog} onOpenChange={(open) => !isLinkingQR && setShowQRLinkDialog(open)}>
+      {/* <Dialog open={showQRLinkDialog} onOpenChange={(open) => !isLinkingQR && setShowQRLinkDialog(open)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -421,7 +437,7 @@ export default function BarcodeScanner() {
             )}
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       
       {/* Input para escanear */}
@@ -526,7 +542,7 @@ export default function BarcodeScanner() {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent>
+        {/* <CardContent>
           {sessionId && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
@@ -538,7 +554,7 @@ export default function BarcodeScanner() {
               </Button>
             </div>
           )}
-        </CardContent>
+        </CardContent> */}
       </Card>
 
       {/* Último producto escaneado */}

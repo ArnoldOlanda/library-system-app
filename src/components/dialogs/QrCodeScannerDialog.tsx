@@ -28,13 +28,13 @@ export const QrCodeScannerDialog = ({ show, sessionId, setShow }: Props) => {
                 <div className="flex flex-col items-center justify-center p-6 space-y-4">
                     <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
                         <QRCodeSVG
-                            value={sessionId}
+                            value={`${SCANNER_URL}?sessionId=${sessionId}`}
                             size={256}
                             level="H"
                             includeMargin={true}
                         />
                     </div>
-                    <div className="text-center space-y-2">
+                    {/* <div className="text-center space-y-2">
                         <p className="text-sm text-muted-foreground">
                             1. Abre <span className="font-semibold">{SCANNER_URL}</span> en tu móvil
                         </p>
@@ -44,7 +44,7 @@ export const QrCodeScannerDialog = ({ show, sessionId, setShow }: Props) => {
                         <p className="text-sm text-muted-foreground">
                             3. Escanea este código QR
                         </p>
-                    </div>
+                    </div> */}
                     <Button onClick={() => setShow(false)} variant="outline" className="w-full">
                         <X className="h-4 w-4 mr-2" />
                         Cerrar
