@@ -10,7 +10,7 @@ export interface ProductScannedEvent {
 }
 
 export interface NewProductScannedEvent {
-  barCode: string;
+  barcode: string;
   scannedBy: string;
   timestamp: string;
 }

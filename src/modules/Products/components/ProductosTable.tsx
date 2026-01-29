@@ -163,8 +163,8 @@ export function ProductosTable({
 
     const handleProductScanned = (data: NewProductScannedEvent) => {
       console.log('📦 Producto recibido en Inventario:', data);
-      setBarCodeScanned(data.barCode);
-      toast.success(`Codigo de barras scaneado: ${data.barCode}`, {
+      setBarCodeScanned(data.barcode);
+      toast.success(`Codigo de barras scaneado: ${data.barcode}`, {
         position: 'top-center',
         duration: 2000,
       });
