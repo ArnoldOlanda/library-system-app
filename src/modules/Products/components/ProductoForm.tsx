@@ -21,6 +21,8 @@ import {
 } from '@/components/ui/select';
 import type { Producto } from '../interfaces';
 import type { Categoria } from '@/modules/Categories/interfaces';
+import { useProductStore } from '../store/productStore';
+import { useEffect } from 'react';
 
 const productoSchema = z.object({
   codigo: z
@@ -79,6 +81,9 @@ interface ProductoFormProps {
 }
 
 export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoading }: ProductoFormProps) {
+
+  const barCodeScanned = useProductStore((state) => state.barCodeScanned);
+
   const form = useForm<ProductoFormValues>({
     resolver: zodResolver(productoSchema),
     defaultValues: {
@@ -93,6 +98,13 @@ export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoadi
       descripcion: producto?.descripcion || '',
     },
   });
+
+  // Efecto para actualizar el campo codigoBarras cuando se escanea un código de barras
+  useEffect(() => {
+    if (barCodeScanned) {
+      form.setValue('codigoBarras', barCodeScanned);
+    }
+  }, [barCodeScanned, form]);
 
   return (
     <Form {...form}>

@@ -22,3 +22,5 @@ export interface TableProps<T,U>{
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }
+
+export type RefreshTokenResponse = ApiResponse<{ token: string }>;

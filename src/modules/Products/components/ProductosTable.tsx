@@ -10,11 +10,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { Producto, ProductResponse } from '../interfaces';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, QrCode, Trash2, Wifi, WifiOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { TableProps } from '@/interfaces';
 import { Pagination } from '@/components/Pagination';
 import { useTable } from '@/hooks/useTable';
+import { QrCodeScannerDialog } from '@/components/dialogs/QrCodeScannerDialog';
+import { useEffect, useState } from 'react';
+import { socketService, type NewProductScannedEvent } from '@/services/socketService';
+import { toast } from 'sonner';
+import { useProductStore } from '../store/productStore';
 
 export function ProductosTable({
   isLoading,
@@ -26,6 +31,8 @@ export function ProductosTable({
   onPageChange,
   onPageSizeChange
 }: TableProps<ProductResponse, Producto>) {
+
+  const setBarCodeScanned = useProductStore((state) => state.setBarCodeScanned);
 
   const columns: ColumnDef<Producto>[] = [
     {
@@ -122,9 +129,64 @@ export function ProductosTable({
     onPageChange
   });
 
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [showQRDialog, setShowQRDialog] = useState(false);
+  const [posSessionId, setPosSessionId] = useState<string>('');
+
+  // Conectar WebSocket para recibir productos escaneados
+  useEffect(() => {
+    // Generar sessionId único para este dispositivo, primero obtenerlo del localStorage si existe
+    let storedSessionId = localStorage.getItem('scanner-session-id');
+    
+    if (storedSessionId) {
+      console.log({storedSessionId});
+      setPosSessionId(storedSessionId);
+    } else {
+      storedSessionId = `pos-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      setPosSessionId(storedSessionId);
+      localStorage.setItem('scanner-session-id', storedSessionId);
+    }
+    
+    console.log('🔌 Conectando POS al WebSocket con sessionId:', storedSessionId);
+    const socket = socketService.connect('warehouse', storedSessionId);
+    
+    // Esperar a que el socket esté conectado
+    const waitForConnection = () => {
+      if (socket.connected) {
+        console.log('✅ Warehouse conectado y listo para recibir codigos de barras');
+        setIsSocketConnected(true);
+      } else {
+        setTimeout(waitForConnection, 100);
+      }
+    };
+    waitForConnection();
+
+    const handleProductScanned = (data: NewProductScannedEvent) => {
+      console.log('📦 Producto recibido en Inventario:', data);
+      setBarCodeScanned(data.barCode);
+      toast.success(`Codigo de barras scaneado: ${data.barCode}`, {
+        position: 'top-center',
+        duration: 2000,
+      });
+    };
+
+    socketService.onNewProductScanned(handleProductScanned);
+
+    // Verificar estado de conexión cada 2 segundos
+    const interval = setInterval(() => {
+      setIsSocketConnected(socketService.isConnected());
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+      socketService.offNewProductScanned(handleProductScanned);
+      socketService.disconnect();
+    };
+  }, []);
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
         <Input
           placeholder="Buscar por nombre o código..."
           value={search ?? ''}
@@ -134,7 +196,28 @@ export function ProductosTable({
           }}
           className="max-w-sm"
         />
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setShowQRDialog(true)}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <QrCode className="h-4 w-4" />
+            Vincular Escáner
+          </Button>
+          <Badge variant={isSocketConnected ? 'default' : 'secondary'} className="flex items-center gap-1">
+            {isSocketConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+            {isSocketConnected ? 'Escáner Conectado' : 'Escáner Desconectado'}
+          </Badge>
+        </div>
       </div>
+
+      <QrCodeScannerDialog 
+        show={showQRDialog}
+        sessionId={posSessionId} 
+        setShow={(show:boolean)=>setShowQRDialog(show)}
+      />
 
       <div className="rounded-md border">
         {

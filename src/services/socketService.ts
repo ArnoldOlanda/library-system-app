@@ -9,6 +9,12 @@ export interface ProductScannedEvent {
   timestamp: string;
 }
 
+export interface NewProductScannedEvent {
+  barCode: string;
+  scannedBy: string;
+  timestamp: string;
+}
+
 export interface ScanSuccessEvent {
   producto: Producto;
   sentToClients: number;
@@ -24,7 +30,7 @@ class SocketService {
   private socket: Socket | null = null;
   private sessionId: string | null = null;
 
-  connect(type: 'scanner' | 'pos', sessionId?: string): Socket {
+  connect(type: 'scanner' | 'pos' | 'warehouse', sessionId?: string): Socket {
     if (this.socket?.connected) {
       console.log('⚠️ Socket ya conectado, re-registrando como:', type);
       this.socket.emit('register', { type, sessionId: this.sessionId });
@@ -97,6 +103,10 @@ class SocketService {
     this.socket?.on('productScanned', callback);
   }
 
+  onNewProductScanned(callback: (data: NewProductScannedEvent) => void) {
+    this.socket?.on('newProductScanned', callback);
+  }
+
   onScanSuccess(callback: (data: ScanSuccessEvent) => void) {
     this.socket?.on('scanSuccess', callback);
   }
@@ -107,6 +117,10 @@ class SocketService {
 
   offProductScanned(callback?: (data: ProductScannedEvent) => void) {
     this.socket?.off('productScanned', callback);
+  }
+
+  offNewProductScanned(callback?: (data: NewProductScannedEvent) => void) {
+    this.socket?.off('newProductScanned', callback);
   }
 
   offScanSuccess(callback?: (data: ScanSuccessEvent) => void) {

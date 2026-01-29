@@ -1,4 +1,5 @@
 import axios from "axios"
+import type { RefreshTokenResponse } from "@/interfaces";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1"
 
@@ -19,7 +20,7 @@ API.interceptors.response.use(
       const { useAuthStore } = await import('@/stores/authStore');
       //Llamar al enpoint de revalidacion de token
       try {
-        const { data } = await API.post<{status: string, timestamp: string, data: { token: string }}>('/auth/refresh-token');
+        const { data } = await API.post<RefreshTokenResponse>('/auth/refresh-token');
         const currentUser = useAuthStore.getState().user;
         useAuthStore.getState().setAuth(currentUser as any, data.data.token);
         // Reintentar la solicitud original con el nuevo token

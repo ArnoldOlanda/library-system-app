@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, BrushCleaning, CheckCircle, Wifi, WifiOff, QrCode, X } from 'lucide-react';
+import { AlertCircle, BrushCleaning, CheckCircle, Wifi, WifiOff, QrCode } from 'lucide-react';
 import { toast } from 'sonner';
-import { QRCodeSVG } from 'qrcode.react';
 import { useCaja } from '@/modules/Cash/hooks/useCaja';
 import { usePOS } from '../hooks/usePOS';
 import { ProductSearch } from '../components/ProductSearch';
@@ -15,8 +14,8 @@ import { Input } from '@/components/ui/input';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { socketService, type ProductScannedEvent } from '@/services/socketService';
+import { QrCodeScannerDialog } from '@/components/dialogs/QrCodeScannerDialog';
 
 export function PosPage() {
   const { openCaja, loading: cajaLoading, error: cajaError } = useCaja();
@@ -184,44 +183,11 @@ export function PosPage() {
       </div>
 
       {/* Modal QR Code */}
-      <Dialog open={showQRDialog} onOpenChange={setShowQRDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5" />
-              Vincular Escáner Móvil
-            </DialogTitle>
-            <DialogDescription>
-              Escanea este código QR desde tu móvil para vincular el escáner a este POS
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-6 space-y-4">
-            <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
-              <QRCodeSVG
-                value={posSessionId}
-                size={256}
-                level="H"
-                includeMargin={true}
-              />
-            </div>
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">
-                1. Abre <span className="font-semibold">http://[IP-PC]:5173/scanner</span> en tu móvil
-              </p>
-              <p className="text-sm text-muted-foreground">
-                2. Presiona "Vincular con POS"
-              </p>
-              <p className="text-sm text-muted-foreground">
-                3. Escanea este código QR
-              </p>
-            </div>
-            <Button onClick={() => setShowQRDialog(false)} variant="outline" className="w-full">
-              <X className="h-4 w-4 mr-2" />
-              Cerrar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <QrCodeScannerDialog 
+        show={showQRDialog}
+        sessionId={posSessionId} 
+        setShow={(show:boolean)=>setShowQRDialog(show)} 
+      />
 
       {/* Customer Information Section */}
       <div className="border rounded-lg p-5 bg-card">
