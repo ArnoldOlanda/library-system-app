@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -150,6 +151,9 @@ export function ProductoForm({ producto, categorias, onSubmit, onCancel, isLoadi
                   <Input placeholder="Ej: 7501234567890" {...field} />
                 </FormControl>
                 <FormMessage />
+                <FormDescription>
+                  Puedes escanear el código de barras usando el escáner móvil.
+                </FormDescription>
               </FormItem>
             )}
           />

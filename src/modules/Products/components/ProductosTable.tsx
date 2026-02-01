@@ -165,7 +165,7 @@ export function ProductosTable({
       console.log('📦 Producto recibido en Inventario:', data);
       setBarCodeScanned(data.barcode);
       toast.success(`Codigo de barras scaneado: ${data.barcode}`, {
-        position: 'top-center',
+        position: 'bottom-right',
         duration: 2000,
       });
     };
