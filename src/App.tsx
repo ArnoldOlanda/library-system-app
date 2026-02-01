@@ -36,9 +36,7 @@ function App() {
             <Route
               path="/scanner"
               element={
-                <ProtectedRoute>
-                  <BarcodeScanner />
-                </ProtectedRoute>
+                <BarcodeScanner />
               }
             />
 
