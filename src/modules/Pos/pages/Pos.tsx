@@ -67,7 +67,7 @@ export function PosPage() {
     waitForConnection();
 
     const handleProductScanned = (data: ProductScannedEvent) => {
-      console.log('📦 Producto recibido en POS:', data);
+      console.log('📦 Producto existente recibido en POS:', data);
       addToCart(data.producto, 1);
       toast.success(`Producto agregado: ${data.producto.nombre}`, {
         position: 'top-center',
@@ -75,7 +75,17 @@ export function PosPage() {
       });
     };
 
+    const handleNewProductScanned = (data: { barcode: string }) => {
+      console.log('📦 Nuevo producto escaneado en POS:', data);
+      toast.info(`Producto nuevo escaneado: ${data.barcode}`, {
+        position: 'top-center',
+        duration: 3000,
+        description: 'Este producto no existe en el inventario',
+      });
+    };
+
     socketService.onProductScanned(handleProductScanned);
+    socketService.onNewProductScanned(handleNewProductScanned);
 
     // Verificar estado de conexión cada 2 segundos
     const interval = setInterval(() => {
@@ -85,6 +95,7 @@ export function PosPage() {
     return () => {
       clearInterval(interval);
       socketService.offProductScanned(handleProductScanned);
+      socketService.offNewProductScanned(handleNewProductScanned);
       socketService.disconnect();
     };
   }, [addToCart]);

@@ -30,7 +30,7 @@ class SocketService {
   private socket: Socket | null = null;
   private sessionId: string | null = null;
 
-  connect(type: 'scanner' | 'pos' | 'warehouse', sessionId?: string): Socket {
+  connect(type: 'scanner' | 'pos', sessionId?: string): Socket {
     if (this.socket?.connected) {
       console.log('⚠️ Socket ya conectado, re-registrando como:', type);
       this.socket.emit('register', { type, sessionId: this.sessionId });
@@ -44,6 +44,7 @@ class SocketService {
     this.socket = io(`${SOCKET_URL}/scanner`, {
       transports: ['websocket', 'polling'],
       reconnection: true,
+      rejectUnauthorized: false,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });

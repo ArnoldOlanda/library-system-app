@@ -147,13 +147,13 @@ export function ProductosTable({
       localStorage.setItem('scanner-session-id', storedSessionId);
     }
     
-    console.log('🔌 Conectando POS al WebSocket con sessionId:', storedSessionId);
-    const socket = socketService.connect('warehouse', storedSessionId);
+    console.log('🔌 Conectando Inventario al WebSocket con sessionId:', storedSessionId);
+    const socket = socketService.connect('pos', storedSessionId);
     
     // Esperar a que el socket esté conectado
     const waitForConnection = () => {
       if (socket.connected) {
-        console.log('✅ Warehouse conectado y listo para recibir codigos de barras');
+        console.log('✅ Inventario conectado y listo para recibir codigos de barras');
         setIsSocketConnected(true);
       } else {
         setTimeout(waitForConnection, 100);
@@ -161,8 +161,8 @@ export function ProductosTable({
     };
     waitForConnection();
 
-    const handleProductScanned = (data: NewProductScannedEvent) => {
-      console.log('📦 Producto recibido en Inventario:', data);
+    const handleNewProductScanned = (data: NewProductScannedEvent) => {
+      console.log('📦 Nuevo producto escaneado en Inventario:', data);
       setBarCodeScanned(data.barcode);
       toast.success(`Codigo de barras scaneado: ${data.barcode}`, {
         position: 'bottom-right',
@@ -170,7 +170,7 @@ export function ProductosTable({
       });
     };
 
-    socketService.onNewProductScanned(handleProductScanned);
+    socketService.onNewProductScanned(handleNewProductScanned);
 
     // Verificar estado de conexión cada 2 segundos
     const interval = setInterval(() => {
@@ -179,7 +179,7 @@ export function ProductosTable({
 
     return () => {
       clearInterval(interval);
-      socketService.offNewProductScanned(handleProductScanned);
+      socketService.offNewProductScanned(handleNewProductScanned);
       socketService.disconnect();
     };
   }, []);
