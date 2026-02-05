@@ -14,6 +14,7 @@ import {
 import { Pagination } from '@/components/Pagination';
 import type { TableProps } from '@/interfaces';
 import { useTable } from '@/hooks/useTable';
+import { Can } from '@/components/Can';
 
 export function CategoriasTable({ 
   isLoading,
@@ -56,20 +57,24 @@ export function CategoriasTable({
         const categoria = row.original;
         return (
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={() => onEdit(categoria)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              onClick={() => onDelete(categoria)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Can I='update' a='categoria'>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                onClick={() => onEdit(categoria)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Can>
+            <Can I='delete' a='categoria'>
+              <Button
+                variant="destructive"
+                size="icon-sm"
+                onClick={() => onDelete(categoria)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
         );
       },

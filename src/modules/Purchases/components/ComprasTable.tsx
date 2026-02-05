@@ -19,6 +19,7 @@ import { format } from '@formkit/tempo';
 import type { TableProps } from '@/interfaces';
 import { useTable } from '@/hooks/useTable';
 import { Pagination } from '@/components/Pagination';
+import { Can } from '@/components/Can';
 
 
 export function ComprasTable({ 
@@ -92,13 +93,15 @@ export function ComprasTable({
             >
               <Eye className="h-4 w-4" />
             </Button>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => onDelete(compra)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Can I='delete' a='compra'>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => onDelete(compra)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
         );
       },

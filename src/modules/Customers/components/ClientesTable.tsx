@@ -14,6 +14,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { type TableProps } from '../../../interfaces/index';
 import { Pagination } from '@/components/Pagination';
 import { useTable } from '@/hooks/useTable';
+import { Can } from '@/components/Can';
 
 
 export function ClientesTable({
@@ -77,20 +78,24 @@ export function ClientesTable({
 
         return (
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onEdit(cliente)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => onDelete(cliente)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Can I='update' a='cliente'>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => onEdit(cliente)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Can>
+            <Can I='delete' a='cliente'>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => onDelete(cliente)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
         );
       },

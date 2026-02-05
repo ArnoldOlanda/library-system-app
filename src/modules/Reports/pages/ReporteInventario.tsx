@@ -1,4 +1,4 @@
-import { FileSpreadsheet } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { useReporteInventario } from '../hooks/useReportes';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,8 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 export function ReporteInventario() {
     const { data, isLoading } = useReporteInventario();
 
-    const handleExportExcel = () => {
-        window.open('http://localhost:3000/api/v1/reportes/inventario/pdf');
+    const handleExportPdf = () => {
+        const url = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+        window.open(`${url}/reportes/inventario/pdf`);
     };
 
     if (isLoading) {
@@ -28,9 +29,9 @@ export function ReporteInventario() {
                                 Reporte de Inventario
                             </h1>
                         </div>
-                        <Button onClick={handleExportExcel} className='bg-green-700 hover:bg-green-800 text-white' size="sm">
-                            <FileSpreadsheet className="h-4 w-4 mr-2" />
-                            Exportar a Excel
+                        <Button onClick={handleExportPdf} className='bg-red-700 hover:bg-red-800 text-white' size="sm">
+                            <FileText className="h-4 w-4 mr-2" />
+                            Exportar a PDF
                         </Button>
                     </div>
                     <div>

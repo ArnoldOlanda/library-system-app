@@ -9,6 +9,7 @@ import { ProductosTable } from '../components/ProductosTable';
 import { ProductoDialog } from '../components/ProductoDialog';
 import { type ProductoFormValues } from '../components/ProductoForm';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Can } from '@/components/Can';
 
 export function Productos() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -109,10 +110,12 @@ export function Productos() {
             Gestiona el inventario de productos
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Producto
-        </Button>
+        <Can I='create' a='producto'>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Producto
+          </Button>
+        </Can>
       </div>
 
       <ProductosTable

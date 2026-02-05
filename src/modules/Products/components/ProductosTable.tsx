@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { socketService, type NewProductScannedEvent } from '@/services/socketService';
 import { toast } from 'sonner';
 import { useProductStore } from '../store/productStore';
+import { Can } from '@/components/Can';
 
 export function ProductosTable({
   isLoading,
@@ -101,20 +102,24 @@ export function ProductosTable({
         const producto = row.original;
         return (
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={() => onEdit(producto)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              onClick={() => onDelete(producto)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Can I='update' a='producto'>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                onClick={() => onEdit(producto)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Can>
+            <Can I='delete' a='producto'>
+              <Button
+                variant="destructive"
+                size="icon-sm"
+                onClick={() => onDelete(producto)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
         );
       },

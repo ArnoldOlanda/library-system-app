@@ -13,6 +13,7 @@ import {
 import type { CreateClienteDto, Cliente } from '../interfaces';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Can } from '@/components/Can';
 
 export function Clientes() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -105,10 +106,12 @@ export function Clientes() {
             Gestiona los clientes del sistema
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Cliente
-        </Button>
+        <Can I='create' a='cliente'>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Cliente
+          </Button>
+        </Can>
       </div>
 
       <ClientesTable

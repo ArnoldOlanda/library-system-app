@@ -6,9 +6,10 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  permissions: string[];
   
   // Actions
-  setAuth: (user: User, token: string) => void;
+  setAuth: (user: User, token: string, permissions: string[]) => void;
   clearAuth: () => void;
   updateUser: (user: Partial<User>) => void;
 }
@@ -19,12 +20,14 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      permissions: [],
 
-      setAuth: (user, token) => {
+      setAuth: (user, token, permissions) => {
         set({
           user,
           token,
           isAuthenticated: true,
+          permissions,
         });
       },
 
@@ -33,6 +36,7 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           token: null,
           isAuthenticated: false,
+          permissions: [],
         });
 
         //Limpiar ssesion ID del scanner al cerrar sesion
@@ -51,6 +55,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        permissions: state.permissions,
       }),
     }
   )

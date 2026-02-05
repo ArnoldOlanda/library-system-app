@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Can } from '@/components/Can';
 
 export function Compras() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -115,10 +116,12 @@ export function Compras() {
             Gestiona las compras a proveedores
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nueva Compra
-        </Button>
+        <Can I='create' a='compra'>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Compra
+          </Button>
+        </Can>
       </div>
 
       <ComprasTable

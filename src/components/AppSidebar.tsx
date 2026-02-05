@@ -13,7 +13,8 @@ import {
   Truck,
   Monitor,
   FileText,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,6 +51,7 @@ const menuItems = [
   { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
   { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Gestión' },
   { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Gestión' },
+  { icon: ShieldCheck, label: 'Roles y Permisos', path: '/roles', group: 'Gestión' },
 ];
 
 const reportesSubmenu = [

@@ -4,8 +4,20 @@ import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/s
 import { Separator } from '@/components/ui/separator';
 import { AppSidebar } from './components/AppSidebar';
 import { UserNav } from './components/UserNav';
+import { useAuthStore } from './stores/authStore';
+import { useEffect } from 'react';
+import ability from './rbac/ability';
+import { mapPermissions } from './lib/utils';
 
 export function Layout() {
+
+  const permissions = useAuthStore((state) => state.permissions);
+
+  useEffect(() => {
+    console.log('Obteniendo permisos desde el store(localStorage)');
+    ability.update(mapPermissions(permissions));
+  },[]);
+
   return (
     <SidebarProvider>
       <AppSidebar />

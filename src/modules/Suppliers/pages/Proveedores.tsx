@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Can } from '@/components/Can';
 
 export default function Proveedores() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -112,10 +113,12 @@ export default function Proveedores() {
             Gestiona los proveedores del sistema
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Proveedor
-        </Button>
+        <Can I='create' a='proveedor'>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Proveedor
+          </Button>
+        </Can>
       </div>
 
       <ProveedoresTable

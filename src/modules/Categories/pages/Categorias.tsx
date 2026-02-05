@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import type { Categoria } from '../interfaces';
 import { ConfirmDialog } from '@/components/dialogs/ConfirmDialog';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Can } from '@/components/Can';
 
 export function Categorias() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -98,10 +99,12 @@ export function Categorias() {
             Gestiona las categorías de productos
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nueva Categoría
-        </Button>
+        <Can I='create' a='categoria'>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Categoría
+          </Button>
+        </Can>
       </div>
 
         <CategoriasTable

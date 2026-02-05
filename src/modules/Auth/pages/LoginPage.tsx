@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { toast } from 'sonner';
+import { Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -15,11 +17,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { authService } from '../services/auth.service';
 import { useAuthStore } from '@/stores/authStore';
-import { toast } from 'sonner';
-import { Package } from 'lucide-react';
+import ability from '@/rbac/ability';
+import { mapPermissions } from '@/lib/utils';
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido').min(1, 'El email es requerido'),
+  email: z.email('Email inválido').min(1, 'El email es requerido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
 
@@ -41,13 +43,23 @@ export function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const {data: loginData} = await authService.login(data);
-      setAuth(loginData.user, loginData.token);
+      const {data: {user, token, permissions}} = await authService.login(data);
+      
+      setAuth(user, token, permissions);
+
+      const mappedPermissions = mapPermissions(permissions);
+      
+      ability.update(mappedPermissions);
+      
       toast.success('¡Bienvenido!');
+      
       navigate('/');
     } catch (error: any) {
+      
+      console.log(error);
       const message = error.response?.data?.message || 'Error al iniciar sesión';
       toast.error(message);
+    
     } finally {
       setIsLoading(false);
     }

@@ -20,6 +20,7 @@ import { TableButtonAction } from '@/components/TableButtonAction';
 import type { TableProps } from '@/interfaces';
 import { useTable } from '@/hooks/useTable';
 import { Pagination } from '@/components/Pagination';
+import { Can } from '@/components/Can';
 
 
 export function VentasTable({ 
@@ -112,12 +113,14 @@ export function VentasTable({
             >
               <Eye className="h-4 w-4" />
             </Button>
-            <TableButtonAction 
-              variant='destructive'
-              icon={<Ban className="h-4 w-4" />}
-              tooltipText='Anular Venta'
-              onClick={() => onDelete(venta)}
-            />
+            <Can I='delete' a='venta'>
+              <TableButtonAction 
+                variant='destructive'
+                icon={<Ban className="h-4 w-4" />}
+                tooltipText='Anular Venta'
+                onClick={() => onDelete(venta)}
+              />
+            </Can>
           </div>
         );
       },

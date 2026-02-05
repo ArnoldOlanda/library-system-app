@@ -19,6 +19,7 @@ import { ArqueosCaja } from './modules/Cash/pages/ArqueosCaja';
 import { ReporteInventario } from './modules/Reports/pages/ReporteInventario';
 import { ReporteVentas } from './modules/Reports/pages/ReporteVentas';
 import { ReporteCompras } from './modules/Reports/pages/ReporteCompras';
+import { Roles } from './modules/Roles/pages/Roles';
 import BarcodeScanner from './pages/BarcodeScanner';
 import { Layout } from './layout';
 import { ThemeProvider } from './components/ThemeProvider';
@@ -44,14 +45,12 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
+                <Layout />
               }
             >
               <Route index element={<Home />} />
               <Route path="usuarios" element={<Users />} />
-              <Route path="productos" element={<Productos />} />
+              <Route path="productos" element={<ProtectedRoute action="read" subject="productos"><Productos /></ProtectedRoute>} />
               <Route path="categorias" element={<Categorias />} />
               <Route path="movimientos-almacen" element={<MovimientosAlmacen />} />
               <Route path="clientes" element={<Clientes />} />
@@ -64,6 +63,7 @@ function App() {
               <Route path="reportes/ventas" element={<ReporteVentas />} />
               <Route path="reportes/compras" element={<ReporteCompras />} />
               <Route path="configuracion" element={<Settings />} />
+              <Route path="roles" element={<Roles />} />
             </Route>
 
             {/* Ruta catch-all para redireccionar a login o home */}

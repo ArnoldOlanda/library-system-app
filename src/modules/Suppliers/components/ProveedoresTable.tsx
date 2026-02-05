@@ -14,6 +14,7 @@ import type { Proveedor, ProveedorResponse } from '../interfaces';
 import type { TableProps } from '@/interfaces';
 import { useTable } from '@/hooks/useTable';
 import { Pagination } from '@/components/Pagination';
+import { Can } from '@/components/Can';
 
 
 export function ProveedoresTable({
@@ -77,20 +78,24 @@ export function ProveedoresTable({
 
         return (
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onEdit(proveedor)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => onDelete(proveedor)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Can I='update' a='proveedor'>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => onEdit(proveedor)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Can>
+            <Can I='delete' a='proveedor'>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => onDelete(proveedor)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
         );
       },

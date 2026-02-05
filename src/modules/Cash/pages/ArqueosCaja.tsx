@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { RefreshCcw } from 'lucide-react';
+import { Can } from '@/components/Can';
 
 
 
@@ -89,26 +90,29 @@ export function ArqueosCaja() {
           <div className='flex gap-2 items-center'>
             {/* Open Cash Register Button */}
             {!openCaja && !cajaLoading && (
-              <Dialog open={isOpenDialogOpen} onOpenChange={setIsOpenDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    Abrir Caja del Día
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg w-[90%] md:w-[50%] lg:w-[30%]">
-                  <DialogHeader>
-                    <DialogTitle>Abrir Caja</DialogTitle>
-                    <DialogDescription>
-                      Ingresa el monto inicial con el que comenzarás las operaciones del día.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <OpenCajaForm onSubmit={handleOpenCaja} isSubmitting={isSubmitting} />
-                </DialogContent>
-              </Dialog>
+              <Can I='create' a='arqueo'>
+                <Dialog open={isOpenDialogOpen} onOpenChange={setIsOpenDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      Abrir Caja del Día
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg w-[90%] md:w-[50%] lg:w-[30%]">
+                    <DialogHeader>
+                      <DialogTitle>Abrir Caja</DialogTitle>
+                      <DialogDescription>
+                        Ingresa el monto inicial con el que comenzarás las operaciones del día.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <OpenCajaForm onSubmit={handleOpenCaja} isSubmitting={isSubmitting} />
+                  </DialogContent>
+                </Dialog>
+              </Can>
             )}
 
             {/* Close Cash Register Button */}
             {openCaja && (
+              <Can I='update' a='arqueo'>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="destructive">
@@ -129,6 +133,7 @@ export function ArqueosCaja() {
                     />
                   </DialogContent>
                 </Dialog>
+              </Can>
             )}
             <Button
               onClick={() => refetchHistory()}

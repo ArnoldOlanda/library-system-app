@@ -21,8 +21,8 @@ export function Home() {
     return (
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
-          <Skeleton className="h-10 w-[200px]" />
-          <Skeleton className="h-4 w-[300px]" />
+          <Skeleton className="h-10 w-50" />
+          <Skeleton className="h-4 w-75" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
@@ -30,8 +30,8 @@ export function Home() {
           ))}
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Skeleton className="h-[400px] col-span-4" />
-          <Skeleton className="h-[400px] col-span-3" />
+          <Skeleton className="h-100 col-span-4" />
+          <Skeleton className="h-100 col-span-3" />
         </div>
       </div>
     );
