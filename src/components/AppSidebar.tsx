@@ -37,38 +37,74 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Link } from 'react-router-dom';
+import { useContext, useMemo } from 'react';
+import { AbilityContext } from '@/rbac/AbilityContext';
 
-const menuItems = [
+interface MenuItem {
+  icon: any;
+  label: string;
+  path: string;
+  group: string;
+  action?: string;
+  subject?: string;
+}
+
+const menuItems: MenuItem[] = [
   { icon: Home, label: 'Inicio', path: '/', group: 'Principal' },
-  { icon: Wallet, label: 'Caja', path: '/caja', group: 'Transacciones' },
-  { icon: Monitor, label: 'POS', path: '/pos', group: 'Transacciones' },
-  { icon: Package, label: 'Productos', path: '/productos', group: 'Inventario' },
-  { icon: Tags, label: 'Categorías', path: '/categorias', group: 'Inventario' },
-  { icon: ArrowLeftRight, label: 'Movimientos', path: '/movimientos-almacen', group: 'Inventario' },
-  { icon: ShoppingBag, label: 'Ventas', path: '/ventas', group: 'Transacciones' },
-  { icon: ShoppingCart, label: 'Compras', path: '/compras', group: 'Transacciones' },
-  { icon: UsersRound, label: 'Clientes', path: '/clientes', group: 'Gestión' },
-  { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión' },
-  { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Gestión' },
-  { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Gestión' },
-  { icon: ShieldCheck, label: 'Roles y Permisos', path: '/roles', group: 'Gestión' },
+  { icon: Wallet, label: 'Caja', path: '/caja', group: 'Transacciones', action: 'read', subject: 'arqueo' },
+  { icon: Monitor, label: 'POS', path: '/pos', group: 'Transacciones', action: 'create', subject: 'venta' },
+  { icon: Package, label: 'Productos', path: '/productos', group: 'Inventario', action: 'read', subject: 'producto' },
+  { icon: Tags, label: 'Categorías', path: '/categorias', group: 'Inventario', action: 'read', subject: 'categoria' },
+  { icon: ArrowLeftRight, label: 'Movimientos', path: '/movimientos-almacen', group: 'Inventario', action: 'read', subject: 'producto' },
+  { icon: ShoppingBag, label: 'Ventas', path: '/ventas', group: 'Transacciones', action: 'read', subject: 'venta' },
+  { icon: ShoppingCart, label: 'Compras', path: '/compras', group: 'Transacciones', action: 'read', subject: 'compra' },
+  { icon: UsersRound, label: 'Clientes', path: '/clientes', group: 'Gestión', action: 'read', subject: 'cliente' },
+  { icon: Truck, label: 'Proveedores', path: '/proveedores', group: 'Gestión', action: 'read', subject: 'proveedor' },
+  { icon: Users, label: 'Usuarios', path: '/usuarios', group: 'Gestión', action: 'read', subject: 'user' },
+  { icon: Settings, label: 'Configuración', path: '/configuracion', group: 'Gestión', action: 'read', subject: 'user' },
+  { icon: ShieldCheck, label: 'Roles y Permisos', path: '/roles', group: 'Gestión', action: 'read', subject: 'role' },
 ];
 
 const reportesSubmenu = [
-  { label: 'Inventario', path: '/reportes/inventario', icon: Package },
-  { label: 'Ventas', path: '/reportes/ventas', icon: ShoppingBag },
-  { label: 'Compras', path: '/reportes/compras', icon: ShoppingCart },
+  { label: 'Inventario', path: '/reportes/inventario', icon: Package, action: 'read', subject: 'producto' },
+  { label: 'Ventas', path: '/reportes/ventas', icon: ShoppingBag, action: 'read', subject: 'venta' },
+  { label: 'Compras', path: '/reportes/compras', icon: ShoppingCart, action: 'read', subject: 'compra' },
 ];
 
-const groupedMenuItems = menuItems.reduce((acc, item) => {
-  if (!acc[item.group]) {
-    acc[item.group] = [];
-  }
-  acc[item.group].push(item);
-  return acc;
-}, {} as Record<string, typeof menuItems>);
-
 export function AppSidebar() {
+  const ability = useContext(AbilityContext);
+
+  // Filtrar items del menú según permisos
+  const filteredMenuItems = useMemo(() => {
+    return menuItems.filter((item) => {
+      // Si no tiene permisos definidos (como Inicio), mostrarlo siempre
+      if (!item.action || !item.subject) return true;
+      // Verificar si el usuario puede realizar la acción
+      return ability.can(item.action, item.subject);
+    });
+  }, [ability]);
+
+  // Filtrar reportes según permisos
+  const filteredReportes = useMemo(() => {
+    return reportesSubmenu.filter((report) => {
+      return ability.can(report.action, report.subject);
+    });
+  }, [ability]);
+
+  // Agrupar items filtrados
+  const groupedMenuItems = useMemo(() => {
+    return filteredMenuItems.reduce((acc, item) => {
+      if (!acc[item.group]) {
+        acc[item.group] = [];
+      }
+      acc[item.group].push(item);
+      return acc;
+    }, {} as Record<string, MenuItem[]>);
+  }, [filteredMenuItems]);
+
+  // Verificar si debe mostrar el acordeón de reportes
+  const showReportes = filteredReportes.length > 0;
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -101,7 +137,7 @@ export function AppSidebar() {
                 ))}
                 
                 {/* Acordeón de Reportes en el grupo Gestión */}
-                {group === 'Gestión' && (
+                {group === 'Gestión' && showReportes && (
                   <Collapsible className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
@@ -113,7 +149,7 @@ export function AppSidebar() {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {reportesSubmenu.map((submenu) => (
+                          {filteredReportes.map((submenu) => (
                             <SidebarMenuSubItem key={submenu.path}>
                               <SidebarMenuSubButton asChild>
                                 <Link to={submenu.path}>

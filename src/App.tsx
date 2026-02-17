@@ -49,21 +49,152 @@ function App() {
               }
             >
               <Route index element={<Home />} />
-              <Route path="usuarios" element={<Users />} />
-              <Route path="productos" element={<ProtectedRoute action="read" subject="productos"><Productos /></ProtectedRoute>} />
-              <Route path="categorias" element={<Categorias />} />
-              <Route path="movimientos-almacen" element={<MovimientosAlmacen />} />
-              <Route path="clientes" element={<Clientes />} />
-              <Route path="proveedores" element={<Proveedores />} />
-              <Route path="compras" element={<Compras />} />
-              <Route path="ventas" element={<Ventas />} />
-              <Route path="pos" element={<PosPage />} />
-              <Route path="caja" element={<ArqueosCaja />} />
-              <Route path="reportes/inventario" element={<ReporteInventario />} />
-              <Route path="reportes/ventas" element={<ReporteVentas />} />
-              <Route path="reportes/compras" element={<ReporteCompras />} />
-              <Route path="configuracion" element={<Settings />} />
-              <Route path="roles" element={<Roles />} />
+              
+              {/* Usuarios */}
+              <Route 
+                path="usuarios" 
+                element={
+                  <ProtectedRoute action="read" subject="user">
+                    <Users />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Productos */}
+              <Route 
+                path="productos" 
+                element={
+                  <ProtectedRoute action="read" subject="producto">
+                    <Productos />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Categorías */}
+              <Route 
+                path="categorias" 
+                element={
+                  <ProtectedRoute action="read" subject="categoria">
+                    <Categorias />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Movimientos de Almacén */}
+              <Route 
+                path="movimientos-almacen" 
+                element={
+                  <ProtectedRoute action="read" subject="producto">
+                    <MovimientosAlmacen />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Clientes */}
+              <Route 
+                path="clientes" 
+                element={
+                  <ProtectedRoute action="read" subject="cliente">
+                    <Clientes />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Proveedores */}
+              <Route 
+                path="proveedores" 
+                element={
+                  <ProtectedRoute action="read" subject="proveedor">
+                    <Proveedores />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Compras */}
+              <Route 
+                path="compras" 
+                element={
+                  <ProtectedRoute action="read" subject="compra">
+                    <Compras />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Ventas */}
+              <Route 
+                path="ventas" 
+                element={
+                  <ProtectedRoute action="read" subject="venta">
+                    <Ventas />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Punto de Venta (POS) */}
+              <Route 
+                path="pos" 
+                element={
+                  <ProtectedRoute action="create" subject="venta">
+                    <PosPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Arqueos de Caja */}
+              <Route 
+                path="caja" 
+                element={
+                  <ProtectedRoute action="read" subject="arqueo">
+                    <ArqueosCaja />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Reportes */}
+              <Route 
+                path="reportes/inventario" 
+                element={
+                  <ProtectedRoute action="read" subject="producto">
+                    <ReporteInventario />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="reportes/ventas" 
+                element={
+                  <ProtectedRoute action="read" subject="venta">
+                    <ReporteVentas />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="reportes/compras" 
+                element={
+                  <ProtectedRoute action="read" subject="compra">
+                    <ReporteCompras />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Roles */}
+              <Route 
+                path="roles" 
+                element={
+                  <ProtectedRoute action="read" subject="role">
+                    <Roles />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Configuración */}
+              <Route 
+                path="configuracion" 
+                element={
+                  <ProtectedRoute action="read" subject="user">
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
             </Route>
 
             {/* Ruta catch-all para redireccionar a login o home */}

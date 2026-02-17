@@ -14,15 +14,16 @@ export const API = axios.create({
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Manejar error 401 (No autorizado)
-    if (error.response?.status === 401) {
+    // Manejar error 401 (No autorizado) y la ruta es distinta a /auth/refresh-token y /login
+    if (error.response?.status === 401 && !error.config.url?.includes('/auth/refresh-token') && !error.config.url?.includes('/auth/login')) {
       
       const { useAuthStore } = await import('@/stores/authStore');
       //Llamar al enpoint de revalidacion de token
       try {
         const { data } = await API.post<RefreshTokenResponse>('/auth/refresh-token');
         const currentUser = useAuthStore.getState().user;
-        useAuthStore.getState().setAuth(currentUser as any, data.data.token);
+        const permissions = useAuthStore.getState().permissions;
+        useAuthStore.getState().setAuth(currentUser as any, data.data.token, permissions);
         // Reintentar la solicitud original con el nuevo token
         const originalRequest = error.config;
         originalRequest.headers['Authorization'] = `Bearer ${data.data.token}`;

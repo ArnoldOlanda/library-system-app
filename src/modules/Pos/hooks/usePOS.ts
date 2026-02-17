@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import type { Producto } from '@/modules/Products/interfaces';
 import type { CartItem, Cart, FormaPago, CreateVentaDto } from '../interfaces';
 import { ventasService } from '../../Sales/services/ventas.service';
+import { printTicketWithAuth } from '../utils/printTicket';
+import { useAuthStore } from '@/stores/authStore';
 
 export const usePOS = () => {
   const [cart, setCart] = useState<Cart>({
@@ -188,6 +190,12 @@ export const usePOS = () => {
       };
 
       const venta = await ventasService.create(ventaDto);
+
+      console.log({venta});
+      
+      // Imprimir el ticket automáticamente después de crear la venta
+      await printTicketWithAuth({ ventaId: venta.id});
+      
       clearCart();
       return venta;
     } catch (error: any) {
