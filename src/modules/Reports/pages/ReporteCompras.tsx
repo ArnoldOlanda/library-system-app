@@ -1,16 +1,16 @@
 import { useReporteCompras } from '../hooks/useReportes';
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { format } from '@formkit/tempo';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { reportesService } from '../services/reportes.service';
 
 export function ReporteCompras() {
     const { data, isLoading } = useReporteCompras();
 
-    const handleExportExcel = () => {
-        // TODO: Implementar exportación a Excel
-        console.log('Exportar a Excel - Compras');
+    const handleExportPDF = () => {
+        reportesService.getReporteComprasPDF();
     };
 
     if (isLoading) {
@@ -30,9 +30,9 @@ export function ReporteCompras() {
                                 Reporte de Compras
                             </h1>
                         </div>
-                        <Button onClick={handleExportExcel} className='bg-green-700 hover:bg-green-800 text-white' size="sm">
-                            <FileSpreadsheet className="h-4 w-4 mr-2" />
-                            Exportar a Excel
+                        <Button onClick={handleExportPDF} className='bg-red-700 hover:bg-red-800 text-white' size="sm">
+                            <FileText className="h-4 w-4 mr-2" />
+                            Exportar PDF
                         </Button>
                     </div>
                     <div>

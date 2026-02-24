@@ -3,13 +3,13 @@ import { useReporteInventario } from '../hooks/useReportes';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { reportesService } from '../services/reportes.service';
 
 export function ReporteInventario() {
     const { data, isLoading } = useReporteInventario();
 
     const handleExportPdf = () => {
-        const url = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
-        window.open(`${url}/reportes/inventario/pdf`);
+        reportesService.getReporteInventarioPDF();
     };
 
     if (isLoading) {
@@ -31,7 +31,7 @@ export function ReporteInventario() {
                         </div>
                         <Button onClick={handleExportPdf} className='bg-red-700 hover:bg-red-800 text-white' size="sm">
                             <FileText className="h-4 w-4 mr-2" />
-                            Exportar a PDF
+                            Exportar PDF
                         </Button>
                     </div>
                     <div>
